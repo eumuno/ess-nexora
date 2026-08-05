@@ -1,0 +1,33 @@
+<mxfile host="app.diagrams.net" modified="2026-08-04T00:00:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="nexora-context" name="Contexto Nexora">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="2" value="Usuários externos&#xa;Visitante • Aluno • Instrutor" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;" vertex="1" parent="1"><mxGeometry x="40" y="180" width="220" height="90" as="geometry"/></mxCell>
+        <mxCell id="3" value="Usuários internos&#xa;Moderador • Administrador • Financeiro" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=16;" vertex="1" parent="1"><mxGeometry x="40" y="500" width="220" height="90" as="geometry"/></mxCell>
+        <mxCell id="4" value="Portal Web / Aplicativo Móvel" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;" vertex="1" parent="1"><mxGeometry x="330" y="180" width="240" height="90" as="geometry"/></mxCell>
+        <mxCell id="5" value="Painel Administrativo" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=16;" vertex="1" parent="1"><mxGeometry x="330" y="500" width="240" height="90" as="geometry"/></mxCell>
+        <mxCell id="6" value="API Nexora&#xa;Regras de negócio e autorização" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=17;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="670" y="325" width="260" height="110" as="geometry"/></mxCell>
+        <mxCell id="7" value="Autenticação e Autorização&#xa;Credenciais • Tokens • Perfis" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=15;" vertex="1" parent="1"><mxGeometry x="660" y="90" width="280" height="90" as="geometry"/></mxCell>
+        <mxCell id="8" value="Banco de Dados&#xa;Contas • Cursos • Progresso • Fóruns • Certificados" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1060" y="230" width="250" height="110" as="geometry"/></mxCell>
+        <mxCell id="9" value="Conteúdo e Streaming&#xa;Vídeos • PDFs • Aulas ao vivo" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1060" y="400" width="250" height="100" as="geometry"/></mxCell>
+        <mxCell id="10" value="Logs e Monitoramento&#xa;Auditoria • Alertas" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=14;" vertex="1" parent="1"><mxGeometry x="1060" y="560" width="250" height="100" as="geometry"/></mxCell>
+        <mxCell id="11" value="Gateway de Pagamento" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=15;" vertex="1" parent="1"><mxGeometry x="1390" y="250" width="190" height="75" as="geometry"/></mxCell>
+        <mxCell id="12" value="Serviço de Notificações" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=15;" vertex="1" parent="1"><mxGeometry x="1390" y="410" width="190" height="75" as="geometry"/></mxCell>
+        <mxCell id="13" value="Recomendações e Gamificação" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=15;" vertex="1" parent="1"><mxGeometry x="1390" y="565" width="190" height="75" as="geometry"/></mxCell>
+        <mxCell id="20" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="2" target="4"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="21" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="3" target="5"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="22" value="Requisições" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="4" target="6"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="23" value="Operações privilegiadas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="5" target="6"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="24" value="Validar identidade e perfil" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="7"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="25" value="Dados da aplicação" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="8"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="26" value="Vídeos e materiais" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="9"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="27" value="Eventos de auditoria" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="10"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="28" value="Cobranças e confirmações" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="11"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="29" value="Mensagens e alertas" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="12"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="30" value="Histórico, pontos e sugestões" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;" edge="1" parent="1" source="6" target="13"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
