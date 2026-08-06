@@ -123,7 +123,15 @@ O primeiro limite de confiança está entre os dispositivos dos usuários e a in
 ---
 
 ## 1.5 Modelagem de Ameaças com STRIDE
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+A modelagem a seguir aplica o método STRIDE aos componentes, ativos e fluxos
+identificados nas Seções 1.3 e 1.4. A análise adota a perspectiva de um agente
+malicioso externo ou interno sobre os pontos de entrada mais expostos da
+Nexora: autenticação e recuperação de senha, upload e consumo de conteúdo,
+avaliações, emissão de certificados, pagamentos e funções administrativas. A
+coluna *Fluxo* referencia os fluxos de dados descritos na Seção 1.4.1.
+
+| ID | Categoria STRIDE | Componente ou ativo | Fluxo | Ameaça identificada | Possível impacto |
+| --- | --- | --- | --- | --- | --- |
 
 ---
 
