@@ -85,19 +85,52 @@ Esta tabela mapeia as ameaças da Etapa 1 a eventos de risco operacional especí
 ---
 
 ## 2.10 Plano de Tratamento
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+Após a análise e classificação dos riscos operacionais identificados na plataforma Nexora, foi estruturado o plano de tratamento contendo as contramedidas específicas para cada cenário mapeado.
+
+| Risco | Estratégia | Controles Propostos | Funções do NIST CSF | Responsáveis | Evidências e Verificação |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **R01 — Uso indevido de conta (Credential Stuffing)** | Reduzir | 1. Implementação de Autenticação Multifator (MFA) obrigatória para contas administrativas e de Instrutores.<br>2. Mecanismo de limite de tentativas de login (Rate Limiting) no servidor de autenticação.<br>3. Política de senhas fortes validada diretamente no servidor. | Protect, Detect, Respond | Equipe de Desenvolvimento e Infraestrutura | 1. Registro de testes comprovando o bloqueio de requisições após tentativas consecutivas inválidas.<br>2. Logs de auditoria registrando acessos suspeitos.<br>3. Fluxo de verificação de token MFA ativo em ambiente de testes. |
+| **R02 — Cadastro de instrutor falso** | Reduzir | 1. Processo de validação de identidade (homologação manual) pela equipe de moderação antes de permitir a publicação de cursos.<br>2. Envio obrigatório de comprovação de documentos e portfólio no painel administrativo. | Govern, Protect | Equipe de Moderação e Gestão de Negócios | 1. Registro no banco de dados mostrando a alteração do status da conta após validação humana.<br>2. Pasta de armazenamento seguro contendo as cópias das documentações apresentadas. |
+| **R03 — Ataques de phishing com e-mails falsos** | Reduzir | 1. Configuração e publicação das diretivas SPF (Sender Policy Framework), DKIM (DomainKeys Identified Mail) e DMARC (Domain-based Message Authentication) com política de rejeição no DNS do domínio. | Protect, Detect | Equipe de Infraestrutura e Redes | 1. Consulta pública ao DNS provando a existência e validade dos registros SPF, DKIM e DMARC do domínio da Nexora.<br>2. Relatórios de falha de entrega de e-mails de servidores não autorizados. |
+| **R04 — Forjamento de notificações de pagamento** | Reduzir | 1. Validação de assinaturas criptográficas (HMAC-SHA256) em todas as requisições enviadas pelo gateway de pagamento.<br>2. Implementação de consulta ativa reversa à API oficial do gateway para revalidação do status da compra antes de liberar o curso. | Protect, Detect, Respond | Equipe de Desenvolvimento | 1. Relatório de testes automatizados simulando retornos sem assinatura e comprovando a rejeição pelo servidor.<br>2. Logs do sistema exibindo tentativas de callback sem token ou assinatura válidos sendo bloqueadas. |
+| *R05 — Tampering* | *A preencher* | *(Aguardando Erik preencher com os riscos de Tampering da Etapa 1)* | *A preencher* | *A preencher* | *(Aguardando Erik)* |
+| *R06 — Repudiation* | *A preencher* | *(Aguardando Erik preencher com os riscos de Repudiation da Etapa 1)* | *A preencher* | *A preencher* | *(Aguardando Erik)* |
+| *R07 — Information Disclosure* | *A preencher* | *(Aguardando Erik preencher com os riscos de Information Disclosure da Etapa 1)* | *A preencher* | *A preencher* | *(Aguardando Erik)* |
+| *R08 — Denial of Service* | *A preencher* | *(Aguardando Erik preencher com os riscos de Denial of Service da Etapa 1)* | *A preencher* | *A preencher* | *(Aguardando Erik)* |
+| *R09 — Elevation of Privilege* | *A preencher* | *(Aguardando Erik preencher com os riscos de Elevation of Privilege da Etapa 1)* | *A preencher* | *A preencher* | *(Aguardando Erik)* |
 
 ---
 
 ## 2.11 Ordem Inicial de Implementação
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+A ordem inicial para a implantação das contramedidas de segurança foi planejada de acordo com as dependências do sistema, o impacto imediato das proteções e o esforço de engenharia necessário:
 
+1. **Fase 1: Configuração DNS e e-mails seguros (R03):** Será a primeira ação pela baixíssima complexidade e rápido ganho reputacional. Trata-se de uma alteração no DNS institucional, sem impacto no código-fonte do portal.
+2. **Fase 2: Políticas de login e bloqueios contra força bruta (R01):** Visa proteger o principal ponto de entrada de usuários antes do lançamento. A inserção do rate limiting e validações no servidor impede ataques em massa que possam indisponibilizar a plataforma.
+3. **Fase 3: Integração e segurança financeira (R04):** Essencial para proteger as transações antes da plataforma transacionar valores reais. A validação de assinaturas HMAC garante a integridade de todas as matrículas vendidas.
+4. **Fase 4: Moderação manual e onboarding de instrutores (R02):** Por envolver processos internos e rotinas de negócios (validação manual de documentos), este controle pode ser formalizado nas fases finais de testes operacionais do sistema.
+5. **Fase 5: Integração de controles complementares:** Atualização do cronograma de desenvolvimento assim que as seções de riscos residuais de Tampering, Repudiation, Vazamento, DoS e Elevação de Privilégio (R05 a R09) forem especificadas pelo grupo.
 ---
 
 ## 2.12 Estimativa do Risco Residual
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+A tabela a seguir apresenta a projeção de mitigação esperada após a implementação funcional de todos os controles recomendados para os riscos atuais.
+
+| Risco | Nível Inicial | Nível Residual Esperado | Condição para Aceitar o Residual |
+| :--- | :--- | :--- | :--- |
+| **R01** | Alto (9) | **Baixo (3)** <br>*(P: 1, I: 3)* | MFA ativado obrigatoriamente para as contas administrativas e bloqueio por IP (Rate Limiting) ativo em produção. |
+| **R02** | Médio (6) | **Baixo (2)** <br>*(P: 1, I: 2)* | Implementação de fluxos operacionais internos de aprovação manual e relatórios de auditoria periódicos das contas de instrutores. |
+| **R03** | Alto (9) | **Baixo (3)** <br>*(P: 1, I: 3)* | Logs de auditoria do DMARC apontando rejeição de e-mails não autorizados em conformidade com as políticas propagadas no DNS. |
+| **R04** | Médio (6) | **Baixo (3)** <br>*(P: 1, I: 3)* | Verificação criptográfica HMAC implementada de forma síncrona no back-end e rotatividade mensal das chaves do gateway. |
+| *R05* | *A preencher* | *A preencher* | *(Aguardando Erik preencher com os riscos de Tampering da Etapa 1)* |
+| *R06* | *A preencher* | *A preencher* | *(Aguardando Erik preencher com os riscos de Repudiation da Etapa 1)* |
+| *R07* | *A preencher* | *A preencher* | *(Aguardando Erik preencher com os riscos de Information Disclosure da Etapa 1)* |
+| *R08* | *A preencher* | *A preencher* | *(Aguardando Erik preencher com os riscos de Denial of Service da Etapa 1)* |
+| *R09* | *A preencher* | *A preencher* | *(Aguardando Erik preencher com os riscos de Elevation of Privilege da Etapa 1)* |
 
 ---
 
 ## 2.13 Considerações Finais da Etapa 2
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+A realização desta etapa demonstrou como traduzir os cenários teóricos identificados na modelagem de ameaças para planos práticos de mitigação baseados em custos, responsabilidades e viabilidade operacional. O uso das funções do NIST CSF 2.0 serviu como norteador de resultados, assegurando que o gerenciamento de incidentes na Nexora não se limite apenas à prevenção técnica, mas também contemple a governança e processos de negócio.
+
+A lição mais relevante para o projeto reside no fato de que os controles de segurança precisam coexistir com a usabilidade e a viabilidade financeira da startup. Reduzir e tratar o risco residual, em vez de focar em uma busca irreal por risco zero, permite que o time dedique recursos técnicos aos pontos que efetivamente trariam consequências graves para o faturamento e para os dados dos usuários protegidos por lei.
+
+Os controles estabelecidos nesta fase servirão de base para a Etapa 3, na qual os requisitos de segurança derivados guiarão a consolidação e o desenho da arquitetura segura e dos limites de confiança do software Nexora.
