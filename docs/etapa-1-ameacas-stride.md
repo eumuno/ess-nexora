@@ -139,70 +139,78 @@ coluna *Fluxo* referencia os fluxos de dados descritos na Seção 1.4.1.
 ---
 
 ## 1.6 Casos de Abuso (Abuse Cases)
+
 ##### CA01 — Download e Distribuição Não Autorizada de Videoaulas (Pirataria)
-* **Ator Malicioso:** Aluno mal-intencionado ou atacante externo autenticado.
-* **Objetivo:** Contornar os controles de reprodução do player de vídeo para baixar e distribuir os arquivos originais de videoaulas protegidas fora da plataforma Nexora.
+* **Ator Malicioso:** Aluno mal-intencionado.
+* **Objetivo:** Baixar as videoaulas do portal para distribuí-las ou comercializá-las ilegalmente fora do sistema.
+* **Ativos Afetados (Seção 1.3.2):** Conteúdo educacional.
+* **Fluxos de Dados Envolvidos (Seção 1.4.1):** **F02** (Portal/App → API → Banco de dados para acessar o curso) e **F03** (Instrutor → API → Armazenamento/Streaming para reprodução do vídeo).
 * **Condições Necessárias:**
-  * O atacante possui uma conta de aluno ativa com acesso a pelo menos um curso pago.
-  * O player de vídeo ou o servidor de streaming não utiliza mecanismos robustos de criptografia/DRM ou URLs assinadas de curta duração com controle de sessão.
+  * O aluno possui uma conta ativa no curso.
+  * O player de vídeo não possui mecanismos que impeçam o download direto do arquivo de mídia pelo navegador.
 * **Fluxo de Abuso:**
-  1. O atacante realiza o login na plataforma Nexora como aluno legítimo.
-  2. O atacante acessa a página do curso e inicia a reprodução de uma das videoaulas.
-  3. O atacante inspeciona o tráfego de rede pelo navegador (Developer Tools) para identificar a URL direta do servidor de streaming de vídeo ou o arquivo de manifesto de transmissão (.m3u8).
-  4. O atacante utiliza um script ou ferramenta de automação para extrair e fazer o download em massa do fluxo de vídeo original diretamente do servidor.
-  5. O atacante salva os arquivos localmente e os redistribui ilegalmente em sites de pirataria ou fóruns de terceiros.
-* **Impacto Esperado:** Violação de direitos autorais e de propriedade intelectual dos instrutores, prejuízo financeiro direto ao modelo de negócios e desvalorização do catálogo de cursos da plataforma.
-* **Categorias STRIDE Relacionadas:** *Information Disclosure* (Exposição não autorizada de propriedade intelectual) e *Tampering* (Burlar/adulterar o fluxo projetado do player).
+  1. O aluno realiza o login legítimo na plataforma.
+  2. Navega até a página de reprodução de uma das videoaulas do curso.
+  3. Abre as ferramentas do desenvolvedor do próprio navegador para capturar o link direto de origem do arquivo de vídeo.
+  4. Realiza o download direto do arquivo de vídeo.
+  5. Salva o arquivo localmente e o compartilha em sites externos de pirataria.
+* **Impacto Esperado:** Perda de propriedade intelectual dos instrutores, prejuízo financeiro para a plataforma e desvalorização do catálogo de cursos.
+* **Categorias STRIDE Relacionadas:** *Information Disclosure* (Vazamento de Informação).
 
 ---
 
 ##### CA02 — Geração Fraudulenta de Certificado de Conclusão de Curso
 * **Ator Malicioso:** Aluno mal-intencionado.
-* **Objetivo:** Obter um certificado digital de conclusão válido, assinado pela Nexora, sem cumprir a carga horária mínima exigida ou realizar as avaliações do curso.
+* **Objetivo:** Obter o certificado digital de conclusão sem assistir às aulas ou realizar as avaliações exigidas.
+* **Ativos Afetados (Seção 1.3.2):** Registros acadêmicos, Perfis e permissões.
+* **Fluxos de Dados Envolvidos (Seção 1.4.1):** **F02** (Portal/App → API → Banco de dados para processamento e emissão de registros).
 * **Condições Necessárias:**
-  * O servidor aceita requisições de geração de certificado por API sem verificar novamente o progresso real e as notas do estudante no banco de dados, confiando apenas nas validações de interface do lado do cliente (front-end).
+  * O sistema de geração de certificados confia apenas na interface visual do navegador (front-end) para liberar o documento, sem que o servidor de banco de dados valide novamente o progresso real e as notas do estudante.
 * **Fluxo de Abuso:**
-  1. O aluno mal-intencionado se matricula em um curso na plataforma Nexora.
-  2. Sem assistir a nenhuma videoaula ou responder questionários, ele inspeciona e intercepta as requisições enviadas ao servidor.
-  3. Ele envia uma requisição HTTP direta à API de emissão de certificados (`/api/v1/certificates/generate`) injetando o ID do curso recém-adquirido.
-  4. O servidor processa a chamada diretamente e gera o certificado oficial em PDF autenticado sem revalidar a porcentagem real de conclusão do aluno.
-  5. O aluno realiza o download do certificado para fins de comprovação acadêmica ou profissional indevida.
-* **Impacto Esperado:** Perda de credibilidade dos certificados emitidos pela Nexora, comprometimento da reputação da marca perante o mercado e desvalorização do processo de aprendizado.
-* **Categorias STRIDE Relacionadas:** *Tampering* (Adulteração de fluxo lógico do processo acadêmico) e *Elevation of Privilege* (Obtenção de uma validação/privilégio indevido).
+  1. O aluno acessa a página do curso em que está matriculado.
+  2. Ele simula/força a requisição de emissão do certificado diretamente para o sistema, ignorando o fluxo comum de visualização das aulas.
+  3. O servidor processa a solicitação sem revalidar as regras de conclusão no banco de dados.
+  4. O sistema gera o certificado em PDF assinado pela Nexora.
+  5. O aluno faz o download do documento inválido.
+* **Impacto Esperado:** Geração de certificados inválidos, fraude acadêmica e perda de credibilidade do processo de ensino da plataforma Nexora.
+* **Categorias STRIDE Relacionadas:** *Tampering* (Adulteração de dados do fluxo lógico) e *Elevation of Privilege* (Obtenção de uma validação/privilégio indevido).
 
 ---
 
 ##### CA03 — Sequestro de Conta de Instrutor para Desvio de Repasses Financeiros
 * **Ator Malicioso:** Atacante externo.
-* **Objetivo:** Alterar os dados bancários ou chave Pix de recebimento de um instrutor legítimo para desviar os repasses financeiros das vendas de seus cursos.
+* **Objetivo:** Alterar a chave de recebimento Pix ou os dados bancários de um instrutor para desviar os valores das vendas de cursos.
+* **Ativos Afetados (Seção 1.3.2):** Credenciais e sessões, Dados pessoais, Dados financeiros.
+* **Fluxos de Dados Envolvidos (Seção 1.4.1):** **F01** (Autenticação) e **F07** (Painel administrativo → API → Logs/Banco de dados para alteração dos dados).
+* **Ameaças STRIDE Relacionadas (Seção 1.5):** Diretamente associado à ameaça **T01** (Uso de credenciais roubadas).
 * **Condições Necessárias:**
-  * O atacante obtém as credenciais de acesso de um instrutor por meio de vazamento de senhas ou engenharia social (*phishing*).
-  * A Nexora não exige confirmação adicional (como reautenticação, token de segurança por e-mail ou autenticação multifator - MFA) para alterações de dados financeiros sensíveis.
+  * O atacante consegue a senha do instrutor (por meio de senhas fracas ou vazamento de credenciais em outros sites).
+  * A plataforma não exige uma confirmação adicional (como digitar a senha novamente ou enviar um código por e-mail) antes de salvar alterações nos dados de faturamento.
 * **Fluxo de Abuso:**
-  1. O atacante autentica-se na plataforma Nexora utilizando as credenciais roubadas do instrutor.
-  2. O atacante navega até o painel de configurações de faturamento e perfil do instrutor.
-  3. Altera a chave Pix cadastrada para o recebimento mensal dos valores das comissões de venda dos cursos.
-  4. O sistema aceita a alteração financeira sem emitir alertas imediatos ou exigir validações extras.
-  5. Ao fim do período de faturamento, os valores devidos ao instrutor são transferidos para a conta do atacante.
-* **Impacto Esperado:** Prejuízo financeiro direto ao instrutor, potencial necessidade de ressarcimento por parte da Nexora, riscos jurídicos e perda de confiança por parte dos criadores de conteúdo na plataforma.
+  1. O atacante faz o login no sistema utilizando as credenciais obtidas do instrutor legítimo.
+  2. Navega até a página de perfil financeiro no painel do instrutor.
+  3. Substitui os dados bancários ou chave Pix do instrutor pelos seus próprios dados.
+  4. O sistema salva a alteração de faturamento sem exigir nenhuma autenticação extra.
+  5. No período de repasse das comissões, os valores das vendas dos cursos são depositados na conta do atacante.
+* **Impacto Esperado:** Desvio de repasses, prejuízo financeiro ao instrutor e danos graves à reputação e à confiabilidade da marca Nexora.
 * **Categorias STRIDE Relacionadas:** *Spoofing* (Falsificação de Identidade para acesso à conta) e *Tampering* (Adulteração de Dados Financeiros).
 
 ---
 
-##### CA04 — Raspagem Massiva de Dados Pessoais de Alunos no Fórum de Dúvidas (IDOR)
-* **Ator Malicioso:** Usuário autenticado mal-intencionado.
-* **Objetivo:** Coletar dados pessoais confidenciais (como e-mail, telefone e CPF) de alunos e instrutores registrados na Nexora em larga escala.
+##### CA04 — Visualização Insegura de Perfis de Outros Alunos (Manipulação de Parâmetros)
+* **Ator Malicioso:** Aluno mal-intencionado.
+* **Objetivo:** Acessar informações pessoais e privadas de outros alunos cadastrados no sistema.
+* **Ativos Afetados (Seção 1.3.2):** Dados pessoais.
+* **Fluxos de Dados Envolvidos (Seção 1.4.1):** **F02** (Portal/App → API → Banco de dados para consultar e exibir o perfil de membros no fórum).
 * **Condições Necessárias:**
-  * Vulnerabilidade de Referência Direta Insegura a Objeto (IDOR) na API responsável pela consulta de perfis de membros no fórum de dúvidas da plataforma.
-  * O servidor de API retorna o conjunto de dados confidenciais completo na resposta JSON, dependendo erroneamente apenas de regras de front-end para ocultar esses dados dos usuários.
+  * O sistema exibe o perfil do usuário na tela usando um identificador numérico visível (ex: `id=123`), mas não valida no servidor se o usuário logado tem permissão para requisitar os dados privados de outros cadastros.
 * **Fluxo de Abuso:**
-  1. O atacante se autentica como aluno e acessa um fórum de dúvidas público de qualquer curso.
-  2. Ele navega até o perfil de outro aluno participante e inspeciona a requisição HTTP enviada à API (ex.: `/api/users/profile/1042`).
-  3. O atacante percebe que o JSON de resposta da API contém dados confidenciais (CPF, telefone e e-mail) que deveriam estar ocultos.
-  4. Ele executa um script automatizado que envia requisições consecutivas iterando os identificadores (`1043`, `1044`, etc.).
-  5. O script armazena todos os registros sensíveis expostos, construindo um banco de dados completo das vítimas.
-* **Impacto Esperado:** Vazamento massivo de dados de privacidade, quebra de conformidade direta com a LGPD (sujeitando a Nexora Educação Digital LTDA a processos e multas administrativas) e danos graves de reputação à empresa.
-* **Categorias STRIDE Relacionadas:** *Information Disclosure* (Exposição indevida de dados pessoais e acadêmicos).
+  1. O aluno faz o login no portal com seu usuário legítimo.
+  2. Acessa a sua própria página de perfil e observa o identificador numérico na barra de endereços do navegador (ex: `https://nexora.com/perfil?id=1050`).
+  3. Altera manualmente o número do identificador na barra de endereços para outro valor (ex: `https://nexora.com/perfil?id=1051`).
+  4. O sistema carrega e exibe na tela os dados privados (como e-mail e CPF) correspondentes ao outro aluno, sem realizar o bloqueio.
+* **Impacto Esperado:** Exposição indevida de dados pessoais, violação de privacidade dos estudantes e descumprimento das diretrizes da LGPD.
+* **Categorias STRIDE Relacionadas:** *Information Disclosure* (Exposição / Divulgação indevida de informações).
 
 ---
 
