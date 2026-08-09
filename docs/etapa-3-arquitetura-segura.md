@@ -30,3 +30,80 @@ implementada e comprovada, pois a Nexora ainda está em fase de especificação.
 | T01 | R01 | RS01 | CWE-307 e CWE-308 |
 | T03 | R03 | RS02 | CWE-290 |
 | T04 | R04 | RS03 | CWE-346 e CWE-354 |
+
+## 3.3 Diagrama de Arquitetura Segura
+
+O diagrama de arquitetura segura a seguir ilustra a distribuição física e lógica dos componentes da plataforma Nexora, as fronteiras de isolamento de rede, os fluxos de dados sensíveis e o posicionamento exato das salvaguardas de segurança projetadas para mitigar os riscos de maior impacto do negócio.
+
+![Diagrama da Arquitetura Segura da Nexora](../diagramas/etapa-3/arquitetura-segura.png)
+
+*   **Arquivo-fonte editável:** [arquitetura-segura.drawio](../diagramas/etapa-3/arquitetura-segura.drawio)
+
+---
+
+#### 3.3.1 Descrição dos Componentes e Fluxo de Dados Seguro
+
+A arquitetura da Nexora está organizada em camadas que representam os diferentes pontos de interação e processamento da plataforma.
+
+1. **Camada de Usuários:** composta por **Alunos, Instrutores e Administradores**, que representam os principais atores do sistema. Os usuários interagem com a plataforma por meio das interfaces disponibilizadas pela Nexora.
+
+2. **Camada de Interfaces:** composta pelo **Portal Web (React)** e pelo **Aplicativo Móvel (Flutter/React Native)**. Essas interfaces constituem os pontos de entrada utilizados pelos usuários para acessar as funcionalidades da plataforma. A comunicação entre as interfaces e a API Gateway ocorre por meio de **HTTPS/TLS**, garantindo a proteção dos dados durante o trânsito.
+
+3. **Camada de Entrada e Serviços Centrais:** a **API Gateway & Core da Nexora** funciona como o principal ponto de entrada para as requisições provenientes das interfaces. Ela centraliza o encaminhamento das solicitações para os serviços internos, controla o acesso aos recursos da aplicação e realiza a comunicação com os componentes de persistência, conteúdo e serviços externos.
+
+4. **Serviço de Autenticação e Autorização:** responsável pela validação das credenciais e dos tokens utilizados no acesso à plataforma. Esse componente também concentra os mecanismos relacionados à autenticação multifator (**MFA**) e às políticas de limitação de requisições (**Rate Limiting**), especialmente importantes para a proteção de contas e operações privilegiadas.
+
+5. **Banco de Dados Relacional:** armazena informações estruturadas da plataforma, incluindo dados de contas, matrículas e progresso dos usuários. O banco é acessado por meio da camada de serviços da Nexora, não sendo exposto diretamente às interfaces utilizadas pelos usuários.
+
+6. **Serviço de Streaming & Vídeo:** responsável pelo armazenamento e disponibilização dos conteúdos audiovisuais utilizados nos cursos da plataforma. O acesso a esse serviço é intermediado pela aplicação, evitando que os usuários precisem estabelecer uma conexão direta com a infraestrutura interna.
+
+7. **Servidor de Logs & Auditoria:** funciona como centralizador dos registros de eventos relevantes da aplicação. Os componentes críticos da arquitetura enviam informações de acesso, operações e eventos de segurança para esse servidor por meio de fluxos unidirecionais de auditoria, permitindo o acompanhamento das atividades realizadas no sistema.
+
+8. **Gateway de Pagamento:** representa a integração da Nexora com um provedor externo de pagamentos, como **Iugu ou Stripe**. A API Gateway inicia o fluxo de checkout e o provedor externo retorna posteriormente o resultado da operação por meio de um **callback** direcionado à API da Nexora.
+
+9. **Serviço de Notificações:** representa os serviços externos utilizados para envio de comunicações por e-mail ou notificações push. A API Gateway encaminha as solicitações de envio para esse serviço, mantendo a integração externa separada da infraestrutura interna da aplicação.
+
+Os principais fluxos representados no diagrama são:
+
+* **Usuários ↔ Interfaces:** comunicação bidirecional entre os atores e as interfaces da plataforma.
+* **Interfaces ↔ API Gateway:** comunicação bidirecional entre o Portal Web ou Aplicativo Móvel e a API, protegida por HTTPS/TLS.
+* **API Gateway ↔ Serviço de Autenticação:** comunicação utilizada para validação de credenciais, tokens e mecanismos de autenticação.
+* **API Gateway → Banco de Dados:** consultas e operações de persistência realizadas pela aplicação.
+* **API Gateway → Serviço de Streaming & Vídeo:** solicitações relacionadas ao acesso e disponibilização de conteúdos.
+* **API Gateway → Servidor de Logs & Auditoria:** envio de registros para auditoria.
+* **Serviço de Autenticação → Servidor de Logs & Auditoria:** registro de eventos relacionados à autenticação e segurança.
+* **Banco de Dados → Servidor de Logs & Auditoria:** envio de eventos relevantes para auditoria.
+* **Serviço de Streaming & Vídeo → Servidor de Logs & Auditoria:** registro de eventos relevantes relacionados ao serviço.
+* **API Gateway → Gateway de Pagamento:** envio de solicitações para realização do checkout.
+* **Gateway de Pagamento → API Gateway:** retorno de informações por meio do callback da operação financeira.
+* **API Gateway → Serviço de Notificações:** encaminhamento de solicitações para envio de e-mails ou notificações.
+
+---
+
+#### 3.3.2 Limites de Confiança (Trust Boundaries)
+
+O diagrama utiliza limites de confiança para representar a separação entre componentes com diferentes níveis de exposição e confiança.
+
+O principal limite de confiança, representado por um **retângulo vermelho tracejado**, envolve os componentes internos da infraestrutura da Nexora: **API Gateway & Core, Serviço de Autenticação, Banco de Dados Relacional, Serviço de Streaming & Vídeo e Servidor de Logs & Auditoria**.
+
+Os componentes localizados fora dessa fronteira são considerados externos à infraestrutura interna da aplicação. Dessa forma, **Alunos, Instrutores, Administradores, Portal Web, Aplicativo Móvel, Gateway de Pagamento e Serviço de Notificações** não fazem parte da zona interna delimitada no diagrama.
+
+A primeira fronteira relevante ocorre entre as interfaces utilizadas pelos usuários e a infraestrutura interna. As requisições provenientes do Portal Web e do Aplicativo Móvel atravessam essa fronteira para chegar à API Gateway e são protegidas por **HTTPS/TLS**, reduzindo o risco de exposição ou alteração dos dados durante o trânsito.
+
+A segunda fronteira está relacionada às **integrações com serviços externos**, representadas pelo Gateway de Pagamento e pelo Serviço de Notificações. Esses serviços ficam fora da infraestrutura de confiança da Nexora e, portanto, as comunicações com eles devem ser tratadas como integrações externas que precisam de mecanismos próprios de validação e proteção.
+
+No caso do Gateway de Pagamento, o retorno das operações financeiras ocorre por meio de um **callback direcionado à API Gateway**. Esse fluxo é protegido pela validação da assinatura HMAC, impedindo que uma mensagem externa não autenticada seja utilizada para alterar indevidamente o estado de uma operação financeira.
+
+O acesso aos componentes internos de dados também é intermediado pela API Gateway. O Banco de Dados Relacional, o Serviço de Streaming & Vídeo e o Servidor de Logs & Auditoria não possuem conexões diretas com os usuários externos representados no diagrama.
+
+---
+
+#### 3.3.3 Posicionamento de Controles e Correlação com Requisitos
+
+Os controles de segurança são representados visualmente por ícones de proteção posicionados nos pontos correspondentes aos riscos que pretendem mitigar:
+
+*   **Comunicação segura — HTTPS/TLS:** os controles de TLS/HTTPS estão posicionados nas conexões entre o Portal Web, o Aplicativo Móvel e a API Gateway. Esse mecanismo protege os dados durante a comunicação entre as interfaces dos usuários e o ponto de entrada da aplicação.
+*   **Autenticação multifator e Rate Limiting (RS01):** o controle está associado ao **Serviço de Autenticação e Autorização**. Atendendo ao requisito **RS01**, o MFA acrescenta uma camada adicional de proteção ao processo de autenticação de administradores e instrutores, enquanto o mecanismo de *Rate Limiting* bloqueia e limita a quantidade de requisições realizadas por um mesmo IP, protegendo a API contra tentativas automatizadas de força bruta.
+*   **Assinatura HMAC no callback de pagamento (RS03):** o controle está posicionado especificamente no fluxo de retorno que parte do **Gateway de Pagamento em direção à API Gateway**. Em total conformidade com o requisito **RS03**, a validação da assinatura criptográfica HMAC-SHA256 permite verificar a autenticidade e a integridade das mensagens de callback recebidas antes que os dados sejam processados para liberar qualquer curso vendido.
+*   **SPF, DKIM e DMARC (RS02):** o controle está associado à comunicação entre a **API Gateway e o Serviço de Notificações**. Esses mecanismos de autenticação de DNS, especificados no requisito **RS02**, contribuem para a proteção do domínio institucional @nexora.com no envio de mensagens de segurança e alertas, minimizando drasticamente a possibilidade de clonagem de remetentes para ataques de phishing contra alunos.
+*   **Auditoria e centralização de logs:** os componentes críticos enviam registros para o **Servidor de Logs & Auditoria** por meio de fluxos de dados unidirecionais. A centralização em tempo real desses registros facilita o monitoramento, a identificação de comportamentos anômalos pelas equipes internas e a futura auditoria ou investigação de incidentes de segurança.
