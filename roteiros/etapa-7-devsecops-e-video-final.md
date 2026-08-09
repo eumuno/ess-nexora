@@ -63,29 +63,7 @@ deverá automatizar validações, calibrar regras com métricas reais, revisar
 periodicamente riscos e manter a rastreabilidade entre ameaça, risco,
 requisito, teste, evidência, detecção e decisão de entrega.
 
-## 7.3 Pipeline DevSecOps
-
-| Fase | Atividade/artefato | Gate |
-|---|---|---|
-| Planejamento | escopo e ativos | G04 |
-| Análise | STRIDE, riscos e tratamento | G04 |
-| Projeto | requisitos e arquitetura segura | G04 |
-| Código | revisão, SAST e segredos | G03 |
-| Testes | TS01–TS04 e testes de integração | G01 |
-| Verificação | SCA/DAST e triagem | G02 |
-| Implantação | aprovação e registro de exceções | G01–G04 |
-| Operação | logs, RD01–RD03 e resposta | revisão periódica |
-
-## 7.4 Roteiro do vídeo (5–8 minutos)
-
-1. **Introdução (0:00–0:40):** sistema, ativos e objetivo do trabalho.
-2. **Ameaças e riscos (0:40–2:20):** STRIDE, casos de abuso e priorização R07/R08/R01.
-3. **Controles e código (2:20–3:40):** MFA/rate limiting e callback HMAC, mostrando os testes.
-4. **Verificação (3:40–4:40):** mostrar somente relatórios ZAP realmente executados e a triagem dos alertas.
-5. **Detecção e DevSecOps (4:40–6:10):** RD01–RD03, resposta e gates.
-6. **Conclusão (6:10–6:40):** rastreabilidade e próximos passos.
-
-A gravação, edição e publicação ainda exigem ação humana e evidência do link publicado.
+## 7.3 Dependências dos demais pacotes
 
 - A tabela completa do pipeline e suas fases pertence ao Pacote A.
 - O roteiro de 5 a 8 minutos pertence ao Pacote C.

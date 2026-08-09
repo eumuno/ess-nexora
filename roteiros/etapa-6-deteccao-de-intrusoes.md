@@ -36,21 +36,9 @@ podem gerar falsos positivos. A resposta preserva o pedido e exige confirmação
 por canal servidor a servidor antes de liberar conteúdo. A chave HMAC, a
 assinatura completa e dados financeiros sensíveis não devem ser registrados.
 
-## 6.2 Eventos e Regra 3
+## 6.2 Dependências dos demais pacotes
 
-Eventos mínimos: horário UTC, tipo da ação, conta ou identificador pseudonimizado, IP/origem, resultado, recurso afetado, correlação da requisição e motivo sanitizado. Não registrar senha, token, segredo HMAC, CPF completo ou cartão.
-
-**RD03 — alteração financeira suspeita:** gerar alerta alto quando uma conta de instrutor alterar chave Pix/dados bancários até 30 minutos após login em dispositivo novo, ou quando houver duas alterações em 24 horas. Conter temporariamente o repasse, exigir reautenticação/MFA, preservar logs e confirmar a alteração com o titular por canal independente.
-
-### Fluxo de resposta
-
-1. Receber e classificar o alerta; correlacionar conta, origem e recurso.
-2. Validar se é incidente, erro operacional ou falso positivo.
-3. Conter: limitar origem, revogar sessão ou suspender a ação financeira, proporcionalmente.
-4. Preservar evidências e registrar decisão, responsável e horário.
-5. Erradicar/corrigir a causa, recuperar o estado seguro e avisar os afetados quando aplicável.
-6. Encerrar somente após revisão, ajuste do controle/regra e registro de lições aprendidas.
-
-## 6.3 Consolidação
-
-As três regras cobrem tomada de conta, fraude de callback e desvio de repasse. Os limiares são iniciais e devem ser calibrados com dados reais.
+- A fundamentação sobre prevenção, detecção e eventos gerais de log pertence ao
+  Pacote A.
+- A Regra 3 e o fluxo completo de resposta pertencem ao Pacote C.
+- A consolidação e ordenação final do roteiro pertencem ao Pacote D.

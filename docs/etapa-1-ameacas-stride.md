@@ -100,9 +100,9 @@ Os principais pontos de entrada sujeitos a abuso são as telas e APIs de autenti
 
 A Nexora utiliza interfaces web e mobile para conectar visitantes, alunos, instrutores e usuários internos aos serviços da plataforma. As requisições autenticadas passam pela API, que consulta o serviço de autenticação e autorização antes de acessar dados ou executar operações. Vídeos e materiais são armazenados separadamente do banco de dados, enquanto pagamentos e notificações dependem de serviços externos.
 
-![Diagrama de contexto e fluxo de dados da Nexora](../diagramas/diagrama-contexto-nexora.png)
+![Diagrama de contexto e fluxo de dados da Nexora](../diagramas/etapa-1/diagrama-contexto-nexora.png)
 
-Arquivo-fonte editável: [diagrama-contexto-nexora.drawio](../diagramas/diagrama-contexto-nexora.drawio).
+Arquivo-fonte editável: [diagrama-contexto-nexora.drawio](../diagramas/etapa-1/diagrama-contexto-nexora.drawio).
 
 ### 1.4.1 Fluxos principais de dados
 
@@ -136,11 +136,6 @@ coluna *Fluxo* referencia os fluxos de dados descritos na Seção 1.4.1.
 | T02 | Spoofing | Portal web e aplicativo móvel / Perfis e permissões | F01 | Pessoa mal-intencionada cadastra-se como instrutor usando o nome de um profissional ou marca conhecida, sem verificação de identidade | Alunos enganados, prejuízo financeiro e dano à reputação da plataforma |
 | T03 | Spoofing | Serviço de notificações | F05 | Mensagens de recuperação de conta são imitadas por terceiros, pois o remetente não é autenticado nem os links protegidos | Captura de credenciais por phishing e comprometimento de contas legítimas |
 | T04 | Spoofing | Gateway de pagamento / API da Nexora | F04 | Requisição forjada ao endpoint de retorno do gateway simula a confirmação de um pagamento que não ocorreu | Liberação de cursos e assinaturas sem receita correspondente |
-| T05 | Tampering | Registros acadêmicos e certificados | F02 | Requisição de emissão altera ou ignora a validação de progresso e notas no servidor | Certificado inválido e fraude acadêmica |
-| T06 | Repudiation | Logs de auditoria e dados financeiros | F07 | Alteração de chave Pix, permissão ou conteúdo privilegiado ocorre sem registro auditável suficiente | Impossibilidade de atribuir a ação e investigar fraude |
-| T07 | Information Disclosure | Perfis, cursos e materiais protegidos | F02/F03 | API entrega recurso de outro usuário ou arquivo de curso sem verificar propriedade ou matrícula | Vazamento de dados pessoais e pirataria de conteúdo |
-| T08 | Denial of Service | API, autenticação e streaming | F01/F02/F03 | Requisições automatizadas esgotam capacidade de login, API ou entrega de vídeo | Indisponibilidade de aulas, vendas e suporte |
-| T09 | Elevation of Privilege | Painel administrativo e permissões | F07 | Endpoint privilegiado aceita papel fornecido pelo cliente ou deixa de verificar autorização no servidor | Acesso administrativo indevido e alteração de dados críticos |
 ---
 
 ## 1.6 Casos de Abuso (Abuse Cases)

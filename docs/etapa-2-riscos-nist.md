@@ -51,11 +51,11 @@ Esta tabela mapeia as ameaças da Etapa 1 a eventos de risco operacional especí
 | **R02** | Spoofing (T02) | Um agente malicioso cadastra-se como um instrutor falso, fraudando alunos e prejudicando a marca Nexora. | Ausência de uma política de validação manual de documentos e de homologação de identidade para novos perfis de instrutor. | 2 | 3 | **6** | **Médio** |
 | **R03** | Spoofing (T03) | Ataques de phishing em massa induzem alunos a fornecer suas credenciais em domínios falsos que simulam o remetente da Nexora. | Falta ou configuração incorreta das diretivas e registros de autenticação de e-mail (SPF, DKIM, DMARC) no domínio institucional da plataforma Nexora. | 3 | 3 | **9** | **Alto** |
 | **R04** | Spoofing (T04) | Um atacante forja notificações HTTP POST de callback simulando confirmação de transação aprovada e liberando cursos sem pagar. | Falha de validação da origem e integridade das requisições de retorno (falta de assinatura HMAC ou de verificação reversa de status na API do gateway). | 2 | 3 | **6** | **Médio** |
-| *R05* | *Tampering* | Emissão fraudulenta de certificado por manipulação do progresso | T05 | 2 | 3 | 6 | Médio |
-| *R06* | *Repudiation* | Alteração privilegiada sem trilha de auditoria suficiente | T06 | 2 | 3 | 6 | Médio |
-| *R07* | *Information Disclosure* | Acesso indevido a perfis ou conteúdo por falha de autorização | T07 | 3 | 4 | 12 | Crítico |
-| *R08* | *Denial of Service* | Indisponibilidade por abuso de API, login ou streaming | T08 | 3 | 4 | 12 | Crítico |
-| *R09* | *Elevation of Privilege* | Elevação de privilégio por falha de autorização de papel | T09 | 2 | 4 | 8 | Alto |
+| *R05* | *Tampering* | *(AGUARDANDO ERIK C/ O STRIDE: irei preencher com os riscos derivados de Tampering da Etapa 1)* | *A preencher* | - | - | - | - |
+| *R06* | *Repudiation* | *(AGUARDANDO ERIK C/ O STRIDE: irei preencher com os riscos derivados de Repudiation da Etapa 1)* | *A preencher* | - | - | - | - |
+| *R07* | *Information Disclosure* | *(AGUARDANDO ERIK C/ O STRIDE: irei preencher com os riscos de vazamento de dados pessoais/financeiros)* | *A preencher* | - | - | - | - |
+| *R08* | *Denial of Service* | *(AGUARDANDO ERIK C/ O STRIDE: irei preencher com riscos de indisponibilidade de streaming/servidor)* | *A preencher* | - | - | - | - |
+| *R09* | *Elevation of Privilege* | *(AGUARDANDO ERIK C/ O STRIDE: irei preencher com riscos de escalação de privilégios para admin)* | *A preencher* | - | - | - | - |
 
 ---
 

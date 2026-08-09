@@ -4,16 +4,12 @@ Esta etapa deverá demonstrar duas práticas de código seguro derivadas dos
 riscos e requisitos das etapas anteriores. Os testes são definidos antes da
 descrição da implementação.
 
-## 4.1 Prática 1 — autenticação reforçada e limitação de tentativas
+## 4.1 Dependência da Prática 1
 
-**Risco/Requisito:** R01 e RS01. Para Instrutor e Administrador, exigir MFA; para todo login, limitar cinco falhas por IP/conta em 15 minutos e devolver `429` na sexta. A senha é comparada somente contra hash seguro; a decisão de papel é do servidor.
-
-| ID | Cenário | Resultado esperado |
-|---|---|---|
-| TS01 | Login válido de administrador, senha correta e segundo fator válido | Sessão autenticada, papel carregado do servidor e evento de sucesso sem senha, OTP ou token em log. |
-| TS02 | Seis tentativas inválidas no intervalo por mesma conta/IP | A sexta é limitada (`429`), não cria sessão, registra evento minimizado e dispara a regra RD01. |
-
-Esta prática é distinta da Prática 2: protege autenticação e tomada de conta; a segunda valida uma integração externa de pagamento.
+A Prática 1 e seus testes ainda não estão disponíveis no repositório. Antes da
+consolidação desta etapa, o grupo deverá confirmar que ela é diferente da
+Prática 2 proposta abaixo e informar seus identificadores, risco e requisito de
+origem.
 
 ## 4.2 Prática 2 — Validação de callbacks de pagamento
 
