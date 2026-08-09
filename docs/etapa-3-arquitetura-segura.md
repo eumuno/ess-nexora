@@ -1,4 +1,5 @@
 # 3 — Requisitos, Decisões de Arquitetura e Diagrama Seguro
+
 Essa etapa tem como propósito transformar os riscos e controles identificados anteriormente em requisitos de segurança específicos e decisões de projeto. O objetivo principal é planejar a organização da plataforma Nexora para garantir a mitigação dos riscos prioritários de forma estruturada antes de avançar para a fase de codificação.
 
 ## 3.1 Requisitos de Segurança e Critérios de Verificação
