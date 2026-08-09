@@ -107,3 +107,8 @@ Os controles de segurança são representados visualmente por ícones de proteç
 *   **Assinatura HMAC no callback de pagamento (RS03):** o controle está posicionado especificamente no fluxo de retorno que parte do **Gateway de Pagamento em direção à API Gateway**. Em total conformidade com o requisito **RS03**, a validação da assinatura criptográfica HMAC-SHA256 permite verificar a autenticidade e a integridade das mensagens de callback recebidas antes que os dados sejam processados para liberar qualquer curso vendido.
 *   **SPF, DKIM e DMARC (RS02):** o controle está associado à comunicação entre a **API Gateway e o Serviço de Notificações**. Esses mecanismos de autenticação de DNS, especificados no requisito **RS02**, contribuem para a proteção do domínio institucional @nexora.com no envio de mensagens de segurança e alertas, minimizando drasticamente a possibilidade de clonagem de remetentes para ataques de phishing contra alunos.
 *   **Auditoria e centralização de logs:** os componentes críticos enviam registros para o **Servidor de Logs & Auditoria** por meio de fluxos de dados unidirecionais. A centralização em tempo real desses registros facilita o monitoramento, a identificação de comportamentos anômalos pelas equipes internas e a futura auditoria ou investigação de incidentes de segurança.
+
+---
+
+## 3.4 Decisões de Arquitetura
+*(PARTE DO ERIK; favor, apagar depois de preencher)*
