@@ -100,9 +100,9 @@ Os principais pontos de entrada sujeitos a abuso são as telas e APIs de autenti
 
 A Nexora utiliza interfaces web e mobile para conectar visitantes, alunos, instrutores e usuários internos aos serviços da plataforma. As requisições autenticadas passam pela API, que consulta o serviço de autenticação e autorização antes de acessar dados ou executar operações. Vídeos e materiais são armazenados separadamente do banco de dados, enquanto pagamentos e notificações dependem de serviços externos.
 
-![Diagrama de contexto e fluxo de dados da Nexora](diagramas/diagrama-contexto-nexora.png)
+![Diagrama de contexto e fluxo de dados da Nexora](../diagramas/diagrama-contexto-nexora.png)
 
-Arquivo-fonte editável: [diagrama-contexto-nexora.drawio](diagramas/diagrama-contexto-nexora.drawio).
+Arquivo-fonte editável: [diagrama-contexto-nexora.drawio](../diagramas/diagrama-contexto-nexora.drawio).
 
 ### 1.4.1 Fluxos principais de dados
 
