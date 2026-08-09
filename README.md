@@ -23,11 +23,11 @@ O projeto está estruturado de forma incremental nas pastas do repositório, fac
 | :---: | :--- | :--- | :---: |
 | **Etapa 1** | Modelagem de Ameaças (STRIDE) e Casos de Abuso | [docs/etapa-1-ameacas-stride.md](docs/etapa-1-ameacas-stride.md) | 🔄 Em Progresso |
 | **Etapa 2** | Análise e Plano de Tratamento de Riscos (NIST CSF 2.0) | [docs/etapa-2-riscos-nist.md](docs/etapa-2-riscos-nist.md) | 🔄 Em Progresso |
-| **Etapa 3** | Requisitos, Decisões de Arquitetura e Diagrama Seguro | [docs/etapa-3-arquitetura-segura.md](docs/etapa-3-arquitetura-segura.md) | 📅 Planejado |
-| **Etapa 4** | Código Seguro (ASVS) e Casos de Teste | [docs/etapa-4-codigo-seguro.md](docs/etapa-4-codigo-seguro.md) | 📅 Planejado |
-| **Etapa 5** | Verificação de Vulnerabilidades com OWASP ZAP | [docs/etapa-5-verificacao-vulnerabilidades.md](docs/etapa-5-verificacao-vulnerabilidades.md) | 📅 Planejado |
-| **Etapa 6** | Roteiro de Detecção de Intrusões | [roteiros/etapa-6-deteccao-de-intrusoes.md](roteiros/etapa-6-deteccao-de-intrusoes.md) | 📅 Planejado |
-| **Etapa 7** | Pipeline DevSecOps e Apresentação em Vídeo | [roteiros/etapa-7-devsecops-e-video-final.md](roteiros/etapa-7-devsecops-e-video-final.md) | 📅 Planejado |
+| **Etapa 3** | Requisitos, Decisões de Arquitetura e Diagrama Seguro | [docs/etapa-3-arquitetura-segura.md](docs/etapa-3-arquitetura-segura.md) | 🔄 Em Progresso |
+| **Etapa 4** | Código Seguro (ASVS) e Casos de Teste | [docs/etapa-4-codigo-seguro.md](docs/etapa-4-codigo-seguro.md) | 🔄 Em Progresso |
+| **Etapa 5** | Verificação de Vulnerabilidades com OWASP ZAP | [evidencias/etapa-5/relatorio-da-verificacao.md](evidencias/etapa-5/relatorio-da-verificacao.md) | 🔄 Em Progresso |
+| **Etapa 6** | Roteiro de Detecção de Intrusões | [roteiros/etapa-6-deteccao-de-intrusoes.md](roteiros/etapa-6-deteccao-de-intrusoes.md) | 🔄 Em Progresso |
+| **Etapa 7** | Pipeline DevSecOps e Apresentação em Vídeo | [roteiros/etapa-7-devsecops-e-video-final.md](roteiros/etapa-7-devsecops-e-video-final.md) | 🔄 Em Progresso |
 
 ---
 

@@ -60,12 +60,158 @@ Esta tabela mapeia as ameaças da Etapa 1 a eventos de risco operacional especí
 ---
 
 ## 2.5 Justificativa das Avaliações
-*(PARTE DE INAURRARA; favor, apagar depois de preencher)*
+
+As avaliações a seguir detalham os quatro riscos que já possuem evento,
+condição, probabilidade e impacto definidos no registro da Seção 2.4. Os riscos
+R05 a R09 ainda não podem ser justificados porque seus eventos e valores
+dependem da conclusão das demais categorias STRIDE na Etapa 1.
+
+### R01 — Uso indevido de conta por credential stuffing
+
+**Origem e caso de abuso relacionado:** T01 — *Spoofing*; CA03 — Sequestro de
+conta de instrutor para desvio de repasses financeiros.
+
+**Justificativa da probabilidade:** a probabilidade foi classificada como 3 —
+média-alta — porque a reutilização de senhas e a exposição de credenciais em
+outros serviços tornam o *credential stuffing* plausível contra uma plataforma
+acessível pela internet. O ataque pode ser automatizado contra o serviço de
+autenticação, embora ainda dependa de credenciais válidas reutilizadas e da
+ausência de MFA ou limitação eficaz de tentativas.
+
+**Justificativa do impacto:** o impacto foi classificado como 3 — alto — porque
+uma conta comprometida permite consultar dados pessoais, utilizar cursos e
+executar ações em nome da vítima. No caso de um instrutor, o atacante também
+pode alterar dados de repasse, acessar informações de alunos e causar prejuízo
+financeiro direto. O alcance inicial permanece vinculado às contas efetivamente
+comprometidas, razão pela qual não foi adotado o valor 4.
+
+**Usuários, ativos e componentes afetados:** alunos, instrutores e, se forem
+alvo, usuários privilegiados; credenciais, sessões, dados pessoais, cursos,
+informações financeiras, serviço de autenticação e API.
+
+**Possíveis consequências e adequação do nível:** invasão de conta, exposição
+de dados, desvio de repasses, ações fraudulentas e perda de confiança.
+Probabilidade 3 × impacto 3 = 9 — risco alto. A classificação é adequada porque
+o evento é plausível e produz prejuízo relevante, mas não compromete
+necessariamente toda a plataforma em uma única ocorrência.
+
+### R02 — Cadastro de instrutor falso
+
+**Origem e caso de abuso relacionado:** T02 — *Spoofing*. A Etapa 1 ainda não
+possui um caso de abuso específico para o cadastro de instrutor falso.
+
+**Justificativa da probabilidade:** a probabilidade foi classificada como 2 —
+média-baixa — porque o abuso depende de uma condição específica: inexistência
+ou insuficiência do processo de validação documental e homologação de novos
+instrutores. O cadastro é acessível e não exige grande capacidade técnica, mas
+o agente ainda precisa criar um perfil convincente e obter aprovação ou
+publicação na plataforma.
+
+**Justificativa do impacto:** o impacto foi classificado como 3 — alto — porque
+alunos podem adquirir cursos fraudulentos, um profissional legítimo pode ter
+sua identidade utilizada indevidamente e a Nexora pode enfrentar estornos,
+denúncias e dano reputacional. O alcance tende a ficar inicialmente limitado
+aos usuários que interagem com o perfil falso.
+
+**Usuários, ativos e componentes afetados:** alunos, instrutores legítimos,
+moderação, suporte e equipe financeira; perfis e permissões, catálogo, cursos,
+pagamentos, painel administrativo e reputação da plataforma.
+
+**Possíveis consequências e adequação do nível:** fraude, prejuízo financeiro,
+estornos, remoção de conteúdo e perda de confiança. Probabilidade 2 × impacto 3
+= 6 — risco médio. O nível reflete um impacto relevante condicionado a uma
+falha específica no processo de homologação.
+
+### R03 — Phishing com e-mails falsos
+
+**Origem e caso de abuso relacionado:** T03 — *Spoofing*. A Etapa 1 ainda não
+possui um caso de abuso específico para campanhas de phishing.
+
+**Justificativa da probabilidade:** a probabilidade foi classificada como 3 —
+média-alta — porque mensagens falsas podem ser distribuídas em escala e com
+baixo custo, aproveitando comunicações previsíveis da Nexora, como recuperação
+de conta e avisos de cursos. O sucesso ainda depende de a vítima confiar na
+mensagem e fornecer suas credenciais, o que impede a classificação como 4.
+
+**Justificativa do impacto:** o impacto foi classificado como 3 — alto — porque
+o sucesso da campanha pode comprometer contas, expor dados e permitir ações em
+nome das vítimas. O dano varia conforme o perfil atingido e depende da
+interação individual de cada destinatário.
+
+**Usuários, ativos e componentes afetados:** principalmente alunos e
+instrutores, podendo alcançar usuários internos; credenciais, sessões, serviço
+de notificações, domínio de e-mail e serviço de autenticação.
+
+**Possíveis consequências e adequação do nível:** roubo de credenciais,
+invasão de contas, fraude e dano reputacional. Probabilidade 3 × impacto 3 = 9
+— risco alto, em razão da plausibilidade, da escala de distribuição e do
+prejuízo relevante às vítimas que interagirem com a campanha.
+
+### R04 — Forjamento de callback de pagamento
+
+**Origem e caso de abuso relacionado:** T04 — *Spoofing*. A Etapa 1 ainda não
+possui um caso de abuso específico para o forjamento de callbacks do gateway.
+
+**Justificativa da probabilidade:** a probabilidade foi classificada como 2 —
+média-baixa — porque o ataque depende do conhecimento do endpoint de retorno e
+de uma falha específica na validação da origem, assinatura ou correspondência
+da notificação com o pedido registrado.
+
+**Justificativa do impacto:** o impacto foi classificado como 3 — alto — porque
+callbacks falsos podem liberar cursos sem pagamento, gerar inconsistências na
+conciliação e afetar os repasses aos instrutores. O impacto foi mantido em 3
+porque a extensão depende da quantidade de pedidos forjados e da capacidade de
+detecção e reversão das liberações.
+
+**Usuários, ativos e componentes afetados:** Nexora, instrutores, compradores
+legítimos e equipe financeira; API, gateway de pagamento, pedidos, transações,
+assinaturas e conteúdo educacional.
+
+**Possíveis consequências e adequação do nível:** perda de receita, acesso
+indevido a conteúdo, divergências financeiras e contestações. Probabilidade 2 ×
+impacto 3 = 6 — risco médio. O nível é coerente com uma exploração dependente
+de vulnerabilidade específica, mas capaz de causar prejuízo relevante.
+
+### Dependências para R05 a R09
+
+As justificativas de R05, R06, R07, R08 e R09 deverão ser acrescentadas depois
+que a Etapa 1 definir as ameaças correspondentes e a Seção 2.4 registrar seus
+eventos, condições e notas. Nenhum valor foi presumido para evitar quebrar a
+rastreabilidade entre ameaça e risco.
 
 ---
 
 ## 2.6 Priorização dos Riscos
-*(PARTE DE INAURRARA; favor, apagar depois de preencher)*
+
+A priorização abaixo é **provisória** e considera somente R01 a R04, os riscos
+que já possuem avaliação completa. A lista final deverá incluir R05 a R09 assim
+que seus valores forem definidos.
+
+| Prioridade provisória | Risco | Pontuação | Nível | Justificativa da prioridade |
+| :---: | :--- | :---: | :---: | :--- |
+| **1** | **R01 — Uso indevido de conta** | **9** | **Alto** | Além de possuir a maior pontuação disponível, já está materializado no CA03 e pode atingir dados pessoais, cursos e repasses financeiros de instrutores. |
+| **2** | **R03 — Phishing com e-mails falsos** | **9** | **Alto** | Pode ser executado em escala e funcionar como porta de entrada para o comprometimento de várias contas, mas depende da interação das vítimas. |
+| **3** | **R04 — Forjamento de callback de pagamento** | **6** | **Médio** | Afeta diretamente a integridade financeira e a liberação de conteúdo, porém depende de uma falha específica na integração com o gateway. |
+| **4** | **R02 — Cadastro de instrutor falso** | **6** | **Médio** | Pode causar fraude e dano reputacional, mas tende a ter alcance inicial mais limitado e admite contenção pela revisão e remoção do perfil. |
+
+### Justificativa da ordem provisória
+
+R01 e R03 possuem a mesma pontuação. R01 recebeu precedência porque o CA03 já
+demonstra uma consequência financeira concreta — o desvio de repasses — e uma
+conta de instrutor comprometida também expõe conteúdo e informações de alunos.
+R03 permanece em segundo lugar devido à possibilidade de distribuição em
+escala e de originar múltiplos comprometimentos de conta.
+
+R04 e R02 também estão empatados. R04 foi colocado antes por afetar a
+integridade do processamento financeiro e permitir liberação automática de
+conteúdo sem receita. R02 tende a iniciar com um único perfil fraudulento e
+pode ser contido por procedimentos de moderação, apesar de ainda exigir
+tratamento.
+
+Esta ordem não deve ser utilizada como priorização final da Etapa 2 nem como
+base exclusiva para selecionar novos requisitos enquanto R05 a R09 permanecerem
+sem avaliação. A lista deverá ser recalculada considerando pontuação, alcance,
+criticidade dos ativos, possibilidade de recuperação, dependências e urgência.
 
 ---
 
