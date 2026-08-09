@@ -1,0 +1,92 @@
+================================================================================
+NEXORA - PLATAFORMA DE ENSINO ONLINE
+ETAPA 4 - CÓDIGO SEGURO E TESTES DE SEGURANÇA
+PRÁTICA 1: Autenticação Multifator (MFA) e Limitação de Tentativas (Rate Limiting)
+Responsável: Bruna Rosa Ferreira
+================================================================================
+
+// ALGORITMO: Controle de Acesso Seguro (MFA e Rate Limiting)
+
+// Função auxiliar para verificar o limite de tentativas de login por IP
+FUNCAO verificar_rate_limit(ip_cliente)
+    tentativas = obter_registro_tentativas_temporario(ip_cliente)
+    
+    SE tentativas >= 5 ENTAO
+        RETORNAR STATUS_HTTP(429, "Limite de tentativas excedido. Bloqueado por 15 minutos.")
+    FIM_SE
+FIM_FUNCAO
+
+// ENDPOINT: Login Primário (E-mail e Senha)
+FUNCAO post_login(requisicao)
+    ip_cliente = requisicao.ip
+    email = requisicao.corpo.email
+    senha = requisicao.corpo.senha
+
+    // Aplica o filtro de segurança de Rate Limiting
+    verificar_rate_limit(ip_cliente)
+
+    // Busca o usuário no banco de dados de forma segura
+    usuario = buscar_usuario_por_email(email)
+    
+    // Validação criptográfica de senha contra o hash armazenado
+    SE usuario NAO EXISTE OU verificar_hash_senha(senha, usuario.senha_hash) == FALSO ENTAO
+        incrementar_registro_tentativas_temporario(ip_cliente)
+        RETORNAR STATUS_HTTP(401, "E-mail ou senha incorretos.")
+    FIM_SE
+
+    // Limpa as tentativas acumuladas do IP após sucesso parcial
+    limpar_registro_tentativas_temporario(ip_cliente)
+
+    // RS01: Valida se o perfil logado exige MFA obrigatório
+    SE usuario.perfil == "Instrutor" OU usuario.perfil == "Administrador" ENTAO
+        // Gera um token temporário assinado apenas para a etapa do MFA (válido por 3 minutos)
+        token_temporario = gerar_jwt_temporario(usuario.id, expira_em: 180_segundos)
+        
+        RETORNAR STATUS_HTTP(200, {
+            mfaRequired: VERDADEIRO,
+            mfaStepToken: token_temporario,
+            mensagem: "Autenticação em duas etapas requerida para este perfil administrativo."
+        })
+    SENAO
+        // Login direto sem MFA para Alunos e Visitantes
+        token_sessao_definitivo = gerar_jwt_sessao(usuario.id, usuario.perfil)
+        RETORNAR STATUS_HTTP(200, { token: token_sessao_definitivo, perfil: usuario.perfil })
+    FIM_SE
+FIM_FUNCAO
+
+// ENDPOINT: Validação do Código MFA (TOTP)
+FUNCAO post_validar_mfa(requisicao)
+    ip_cliente = requisicao.ip
+    token_temporario = requisicao.corpo.mfaStepToken
+    codigo_totp = requisicao.corpo.totpCode
+
+    // Aplica o filtro de segurança de Rate Limiting
+    verificar_rate_limit(ip_cliente)
+
+    // Decodifica e valida a integridade do token temporário
+    dados_token = decodificar_e_validar_jwt(token_temporario)
+    SE dados_token == NULO ENTAO
+        RETORNAR STATUS_HTTP(401, "Sessão de MFA temporária inválida ou expirada.")
+    FIM_SE
+
+    // Busca o usuário correspondente ao token temporário
+    usuario = buscar_usuario_por_id(dados_token.usuario_id)
+    SE usuario == NULO ENTAO
+        RETORNAR STATUS_HTTP(401, "Usuário não localizado.")
+    FIM_SE
+
+    // Validação do código de 6 dígitos gerado pelo usuário usando o segredo criptográfico
+    is_codigo_valido = validar_codigo_totp_criptografico(codigo_totp, usuario.mfa_segredo)
+    
+    SE is_codigo_valido == FALSO ENTAO
+        incrementar_registro_tentativas_temporario(ip_cliente) // Registra a falha no IP
+        RETORNAR STATUS_HTTP(401, "Código de autenticação multifator inválido ou expirado.")
+    FIM_SE
+
+    // Sucesso completo: limpa o IP e emite o token de acesso definitivo (JWT)
+    limpar_registro_tentativas_temporario(ip_cliente)
+    token_sessao_definitivo = gerar_jwt_sessao(usuario.id, usuario.perfil)
+    
+    RETORNAR STATUS_HTTP(200, { token: token_sessao_definitivo, perfil: usuario.perfil })
+FIM_FUNCAO
+
