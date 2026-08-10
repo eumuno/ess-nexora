@@ -9,7 +9,18 @@ descrição da implementação.
 ## 4.1 Prática de Código Seguro 1: Autenticação Multifator (MFA) e Limitação de Tentativas (Rate Limiting)
 
 ### 4.1.1 Concepção e Casos de Teste
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+A primeira prática de código seguro foca no endurecimento do fluxo de autenticação da plataforma, protegendo os acessos contra tentativas de força bruta e sequestro de contas com credenciais previamente vazadas na internet.
+
+* **Risco de Origem:** R01 — Uso indevido de conta (Credential Stuffing).
+* **Requisito de Segurança Relacionado:** RS01 — Exigência de autenticação multifator (MFA) obrigatória para contas administrativas e de instrutores, além de bloqueio de tentativas de acesso sequenciais inválidas.
+
+Para validar esse comportamento de forma objetiva, definimos os seguintes casos de teste de segurança antes do início do desenvolvimento da solução técnica:
+
+| ID do Teste | Descrição da Entrada / Ação | Resultado Seguro Esperado |
+| :--- | :--- | :--- |
+| **TS01 — Login Válido com MFA** | Usuário administrativo ou instrutor fornece e-mail e senha corretos e, em seguida, insere o código de 6 dígitos válido gerado pelo seu aplicativo autenticador. | O sistema valida as credenciais e o token temporário, emite o cookie de sessão seguro/token JWT e autoriza o acesso ao painel de controle. |
+| **TS02 — Login com Código MFA Inválido** | Usuário fornece e-mail e senha corretos, mas insere um código MFA incorreto, expirado ou em branco. | O servidor bloqueia o login imediatamente, invalida a tentativa, retorna um erro HTTP 401 Unauthorized e registra o evento suspeito nos logs de segurança. |
+| **TS03 — Bloqueio por Força Bruta (Rate Limiting)** | Atacante submete 6 requisições consecutivas de login em menos de 15 minutos para o mesmo endpoint utilizando diferentes combinações de senhas vindo do mesmo endereço IP. | O servidor bloqueia a 6ª requisição, interrompe temporariamente o processamento de novas tentativas para aquele IP, retorna o erro HTTP 429 Too Many Requests e ativa o alerta de defesa. |
 
 ---
 
