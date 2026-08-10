@@ -184,6 +184,7 @@ insuficiente no lado do servidor sobre dados originados do dispositivo do usuár
 (primeiro limite), enquanto T04 explora a ausência de autenticação na resposta de
 um serviço externo (segundo limite) e T23 decorre da separação incompleta entre
 funções comuns e privilegiadas (terceiro limite).
+
 ---
 
 ## 1.6 Casos de Abuso (Abuse Cases)
