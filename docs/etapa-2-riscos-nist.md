@@ -216,7 +216,28 @@ criticidade dos ativos, possibilidade de recuperação, dependências e urgênci
 ---
 
 ## 2.7 Estratégias de Tratamento
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+Definida a criticidade de cada risco, esta seção estabelece **como** cada um
+será tratado. O tratamento não se confunde com o controle técnico: primeiro o
+grupo decide a postura diante do risco, e só depois seleciona as medidas
+concretas, detalhadas na Seção 2.10.
+
+Foram consideradas as quatro estratégias clássicas de tratamento:
+
+| Estratégia | Descrição | Quando é apropriada na Nexora |
+| :--- | :--- | :--- |
+| **Evitar** | Eliminar a atividade, funcionalidade ou condição que dá origem ao risco. | Somente quando a funcionalidade não for essencial ao negócio, o que raramente ocorre em uma plataforma cuja operação depende de cadastro aberto, pagamentos e streaming. |
+| **Reduzir** | Implementar controles que diminuam a probabilidade de ocorrência, o impacto, ou ambos. | Estratégia predominante, aplicável quando a funcionalidade precisa continuar existindo, mas pode receber salvaguardas adicionais. |
+| **Compartilhar** | Atribuir parte da operação, da execução do controle ou de suas consequências a um terceiro. | Aplicável às integrações externas da Nexora — gateway de pagamento, provedor de e-mail, serviço de streaming e infraestrutura em nuvem. |
+| **Aceitar** | Reconhecer e manter conscientemente o risco, com justificativa formal e acompanhamento periódico. | Aplicável ao risco residual que permanece após o tratamento, quando o custo de reduzi-lo ainda mais for desproporcional ao benefício. |
+
+Aceitar um risco não significa ignorá-lo. A decisão precisa ser justificada,
+aprovada por uma pessoa responsável e revista sempre que a arquitetura, os
+controles ou o contexto de operação da Nexora mudarem.
+
+Compartilhar também não transfere a responsabilidade final. Ainda que a Nexora
+delegue o processamento de pagamentos a um gateway externo, permanece
+responsável por validar as respostas recebidas e por responder aos seus
+usuários e às autoridades competentes.
 
 ---
 
