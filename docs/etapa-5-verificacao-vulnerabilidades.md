@@ -63,8 +63,6 @@ Painel de alertas do OWASP ZAP apresentando os achados identificados durante a s
 Registro do comportamento observado na interface do OWASP Juice Shop durante a execução das requisições automatizadas realizadas pelo scanner.
 ![06 - Efeito do Ataque no JuiceShop](../evidencias/etapa-5/06-efeito-do-ataque-no-juiceshop.png)
 
-> ⚠️ **Nota sobre os alertas individuais:** As capturas específicas dos três alertas selecionados serão adicionadas a esta seção após a definição dos achados que serão analisados individualmente pela equipe, sendo um alerta de responsabilidade de Gabriela e dois de responsabilidade de Erik.
-
 ---
 
 ## 5.2 Tabela Geral de Achados e Alertas
