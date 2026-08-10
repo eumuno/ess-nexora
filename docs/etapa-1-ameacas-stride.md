@@ -164,6 +164,34 @@ coluna *Fluxo* referencia os fluxos de dados descritos na Seção 1.4.1.
 | T23 | Elevation of Privilege | Painel administrativo | F07 | Rotas administrativas ficam ocultas apenas na interface, sem verificação de permissão na API, acessíveis a qualquer usuário autenticado | Acesso a dados financeiros, exclusão de cursos e alteração de contas |
 | T24 | Elevation of Privilege | API da Nexora / Banco de dados | F02 | Exploração de vulnerabilidade conhecida em biblioteca desatualizada utilizada pelo servidor de aplicação | Comprometimento do servidor e acesso irrestrito à camada de dados |
 ---
+### 1.5.1 Interpretação da análise
+
+As ameaças identificadas mostram que diferentes partes da Nexora exigem
+proteções distintas. As credenciais e sessões sustentam a identidade dos
+usuários e concentram as ameaças de Spoofing. Os registros acadêmicos, os dados
+financeiros e o conteúdo educacional dependem da integridade e são o alvo
+principal das ameaças de Tampering. Os logs de auditoria permitem responsabilizar
+quem executou cada operação e respondem pelas ameaças de Repudiation. Os dados
+pessoais e o conteúdo pago exigem confidencialidade. O streaming e as aulas ao
+vivo precisam permanecer disponíveis nos períodos de maior uso. As funções
+administrativas e financeiras devem ser acessíveis somente a quem possui a
+permissão correspondente.
+
+Todas as seis categorias do STRIDE se mostraram aplicáveis, não havendo categoria
+descartada. Isso decorre da combinação descrita na Seção 1.2: múltiplos perfis de
+acesso com privilégios distintos, dados pessoais protegidos por lei, transações
+financeiras, propriedade intelectual de terceiros e dependência de serviços
+externos. Essa combinação expõe a plataforma tanto a ataques externos quanto a
+abusos praticados por usuários legítimos, incluindo instrutores e usuários
+internos.
+
+As ameaças concentram-se nos limites de confiança apontados na Seção 1.4.2: a
+maior parte dos casos de Tampering e Elevation of Privilege decorre de validação
+insuficiente no lado do servidor sobre dados originados do dispositivo do usuário
+(primeiro limite), enquanto T04 explora a ausência de autenticação na resposta de
+um serviço externo (segundo limite) e T23 decorre da separação incompleta entre
+funções comuns e privilegiadas (terceiro limite).
+---
 
 ## 1.6 Casos de Abuso (Abuse Cases)
 
