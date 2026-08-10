@@ -68,10 +68,50 @@ Registro do comportamento observado na interface do OWASP Juice Shop durante a e
 
 | ID | Alerta ou achado | Evidência | Possível impacto | Relação CWE/OWASP | Correção proposta |
 | :---: | :--- | :--- | :--- | :--- | :--- |
-| A01 | **Pendente — Pacote B** | Pendente | Pendente | Pendente | Pendente |
+| A01 | **Injeção SQL (SQL Injection)** | Alerta vermelho (High) no painel de alertas do OWASP ZAP (Active Scan), evidenciando que parâmetros enviados via requisições HTTP foram concatenados de forma direta em queries executadas no banco de dados da aplicação de testes. | Um atacante pode burlar a autenticação (ex.: logar como administrador sem senha), extrair dados sensíveis (LGPD), alterar notas/certificados de alunos ou comprometer totalmente o servidor do banco de dados. | CWE-89 (Neutralização Inadequada de Elementos Especiais em Comandos SQL) e OWASP Top 10:2021 — A03: Injection. | Implementar o uso mandatório de consultas parametrizadas (Prepared Statements) ou a utilização segura de um mapeador objeto-relacional (ORM), além de sanitização rigorosa de inputs no backend. |
 | A02 | **Pendente — Pacote C, se encontrado** | Pendente | Pendente | Pendente | Pendente |
 | A03 | **Pendente — Pacote C, se encontrado** | Pendente | Pendente | Pendente | Pendente |
 
+## 5.2.1 Análise Detalhada do Alerta 1 (A01)
+
+### Descrição do Achado
+Durante a varredura ativa executada pelo OWASP ZAP, a ferramenta identificou que o endpoint de login/consulta da aplicação é vulnerável a **Injeção SQL (SQL Injection)**. Isso ocorre porque o interpretador SQL do servidor de banco de dados da aplicação-alvo não diferencia instruções de controle dos dados fornecidos pelo usuário no corpo da requisição ou nos parâmetros de URL, executando comandos maliciosos injetados diretamente na query.
+
+### Evidência Extraída
+* **Severidade:** Alta (High) / Alerta Vermelho no OWASP ZAP.
+* **Endpoint Afetado na Instância de Testes:** `/rest/user/login` (Parâmetro `email` e/ou `password`).
+* **Payload de Ataque Exemplo:** `admin@juice-sh.op' OR 1=1 --` enviado no campo de login.
+* **Comportamento Observado:** O servidor retornou status `200 OK` e um token de sessão válido para a conta de administrador da aplicação, mesmo sem o fornecimento de uma senha legítima, evidenciando o bypass completo da barreira de autenticação.
+
+### Impacto Real no Sistema Nexora
+Se essa vulnerabilidade existisse em um ambiente de produção da plataforma Nexora, as consequências seriam catastróficas:
+1. **Quebra de Confidencialidade (LGPD):** Um atacante poderia realizar a extração em massa (dump) do banco de dados, vazando credenciais, hashes de senhas e informações pessoais de alunos e instrutores.
+2. **Quebra de Integridade:** Modificação arbitrária de registros acadêmicos (como alteração de notas de avaliações, falsificação de progresso em trilhas de cursos e geração fraudulenta de certificados oficiais).
+3. **Prejuízo Financeiro:** Alteração de dados bancários de instrutores no faturamento e liberação fraudulenta de cursos pagos sem a transação correspondente.
+
+### Relação CWE / OWASP
+* **CWE-89:** Neutralização Inadequada de Elementos Especiais em Comandos SQL (SQL Injection).
+* **OWASP Top 10:2021:** Categoria **A03:2021 — Injection**.
+
+### Correção Técnica Proposta
+Para mitigar em definitivo a vulnerabilidade de SQL Injection na plataforma Nexora, as seguintes medidas devem ser adotadas no código-fonte:
+
+1. **Uso de Consultas Parametrizadas (Prepared Statements):**
+   Garantir que todas as consultas ao banco de dados usem parâmetros em vez de concatenação direta de strings. Isso força o interpretador a tratar a entrada do usuário estritamente como dado, nunca como comando executável.
+   
+   *Exemplo seguro (Node.js/Node-Postgres):*
+   ```javascript
+   const query = 'SELECT id, email, role FROM Users WHERE email = $1 AND password = $2';
+   const values = [req.body.email, hashed_password];
+   const result = await db.query(query, values);
+   ```
+
+2. **Uso de ORM (Object-Relational Mapping):**
+   Utilizar mapeadores de banco de dados modernos (como Sequelize, Prisma ou Hibernate) que utilizam parametrização por padrão em seus métodos de busca e persistência de dados, evitando a escrita manual de queries SQL vulneráveis.
+
+3. **Princípio do Menor Privilégio no Banco de Dados:**
+   A conta de serviço do banco de dados utilizada pela aplicação Nexora não deve possuir permissões de superusuário (admin/root). Ela deve ser restrita estritamente aos privilégios necessários para as tabelas de uso diário (ex: `SELECT`, `INSERT`, `UPDATE`), impedindo comandos de manipulação estrutural como `DROP TABLE` ou acesso ao sistema operacional.
+   
 ## 5.3 Possíveis falsos positivos e alertas descartados
 
 Esta seção deverá registrar, para cada alerta questionado ou descartado:
