@@ -62,8 +62,6 @@ Painel de alertas do OWASP ZAP apresentando os achados identificados durante a s
 Registro do comportamento observado na interface do OWASP Juice Shop durante a execução das requisições automatizadas realizadas pelo scanner.
 ![06 - Efeito do Ataque no JuiceShop](06-efeito-do-ataque-no-juiceshop.png)
 
-> ⚠️ **Nota sobre os alertas individuais:** As capturas específicas dos três alertas selecionados serão adicionadas a esta seção após a definição dos achados que serão analisados individualmente pela equipe, sendo um alerta de responsabilidade de Gabriela e dois de responsabilidade de Erik.
-
 ## 5.2 Registro consolidado dos achados
 
 | ID | Alerta ou achado | Evidência | Possível impacto | Relação CWE/OWASP | Correção proposta |
@@ -72,28 +70,28 @@ Registro do comportamento observado na interface do OWASP Juice Shop durante a e
 | A02 | **Pendente — Pacote C, se encontrado** | Pendente | Pendente | Pendente | Pendente |
 | A03 | **Pendente — Pacote C, se encontrado** | Pendente | Pendente | Pendente | Pendente |
 
-## 5.2.1 Análise Detalhada do Alerta 1 (A01)
+### 5.2.1 Análise Detalhada do Alerta 1 (A01)
 
-### Descrição do Achado
+#### Descrição do Achado
 Durante a varredura ativa executada pelo OWASP ZAP, a ferramenta identificou que o endpoint de login/consulta da aplicação é vulnerável a **Injeção SQL (SQL Injection)**. Isso ocorre porque o interpretador SQL do servidor de banco de dados da aplicação-alvo não diferencia instruções de controle dos dados fornecidos pelo usuário no corpo da requisição ou nos parâmetros de URL, executando comandos maliciosos injetados diretamente na query.
 
-### Evidência Extraída
+#### Evidência Extraída
 * **Severidade:** Alta (High) / Alerta Vermelho no OWASP ZAP.
 * **Endpoint Afetado na Instância de Testes:** `/rest/user/login` (Parâmetro `email` e/ou `password`).
 * **Payload de Ataque Exemplo:** `admin@juice-sh.op' OR 1=1 --` enviado no campo de login.
 * **Comportamento Observado:** O servidor retornou status `200 OK` e um token de sessão válido para a conta de administrador da aplicação, mesmo sem o fornecimento de uma senha legítima, evidenciando o bypass completo da barreira de autenticação.
 
-### Impacto Real no Sistema Nexora
+#### Impacto Real no Sistema Nexora
 Se essa vulnerabilidade existisse em um ambiente de produção da plataforma Nexora, as consequências seriam catastróficas:
 1. **Quebra de Confidencialidade (LGPD):** Um atacante poderia realizar a extração em massa (dump) do banco de dados, vazando credenciais, hashes de senhas e informações pessoais de alunos e instrutores.
 2. **Quebra de Integridade:** Modificação arbitrária de registros acadêmicos (como alteração de notas de avaliações, falsificação de progresso em trilhas de cursos e geração fraudulenta de certificados oficiais).
 3. **Prejuízo Financeiro:** Alteração de dados bancários de instrutores no faturamento e liberação fraudulenta de cursos pagos sem a transação correspondente.
 
-### Relação CWE / OWASP
+#### Relação CWE / OWASP
 * **CWE-89:** Neutralização Inadequada de Elementos Especiais em Comandos SQL (SQL Injection).
 * **OWASP Top 10:2021:** Categoria **A03:2021 — Injection**.
 
-### Correção Técnica Proposta
+#### Correção Técnica Proposta
 Para mitigar em definitivo a vulnerabilidade de SQL Injection na plataforma Nexora, as seguintes medidas devem ser adotadas no código-fonte:
 
 1. **Uso de Consultas Parametrizadas (Prepared Statements):**
