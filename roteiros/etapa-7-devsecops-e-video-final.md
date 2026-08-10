@@ -4,7 +4,22 @@
 
 ## 7.1 Atividades de Segurança no Pipeline DevSecOps
 
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+Para garantir que a segurança não seja um componente adicionado tardiamente ao software, a plataforma Nexora adota a filosofia DevSecOps. O ciclo de vida do desenvolvimento de software (SDLC) foi reestruturado para incorporar controles, verificações e validações de segurança automatizadas e manuais em cada uma de suas oito fases principais.
+
+A tabela a seguir mapeia cada momento do pipeline, as atividades de segurança correspondentes, as evidências geradas (conectando com o trabalho prático realizado pelo grupo nas etapas anteriores) e os critérios mínimos de continuidade para que o pipeline avance de forma segura.
+
+### Tabela Mestra de Atividades de Segurança do Pipeline
+
+| Momento / Fase do SDLC | Atividade de Segurança Realizada | Evidência Técnica Produzida | Condição Mínima de Continuidade |
+| :--- | :--- | :--- | :--- |
+| **1. Planejamento** | Modelagem de ameaças e mapeamento dos principais Casos de Abuso relacionados ao negócio. | Documento Markdown de análise STRIDE contendo as ameaças e comportamentos de ataque modelados. | 100% dos ativos críticos identificados e ameaças de alto impacto mapeadas pelo grupo. |
+| **2. Requisitos e Arquitetura** | Definição de requisitos de segurança baseados no NIST CSF 2.0 e tomada de decisões arquiteturais seguras. | Registro de riscos priorizados, requisitos de segurança formais e diagrama da arquitetura segura. | Plano de tratamento de riscos aprovado e fronteiras de confiança da arquitetura claramente estabelecidas. |
+| **3. Implementação (Código)** | Desenvolvimento defensivo baseado em guias oficiais (OWASP Cheat Sheets) para mitigar falhas comuns. | Código-fonte ou pseudocódigo estruturado contendo as práticas defensivas implementadas. | Zero credenciais, chaves de API ou segredos de ambiente expostos em texto simples no código-fonte. |
+| **4. Testes** | Criação e execução de planos de testes funcionais e testes de segurança focados nos fluxos críticos. | Especificações técnicas de casos de teste de segurança positivos e negativos documentados. | 100% dos testes de regressão de segurança (ex: validação de token MFA e bloqueio por força bruta) aprovados. |
+| **5. Análise de Código (SAST/SCA)** | Varredura estática de vulnerabilidades no código (SAST) e análise de vulnerabilidades em bibliotecas de terceiros (SCA). | Relatórios automatizados gerados por ferramentas de varredura estática e análise de dependências desatualizadas. | Ausência de dependências de terceiros com vulnerabilidades conhecidas (CVEs) críticas sem mitigação ativa. |
+| **6. Verificação Dinâmica (DAST)** | Varredura de segurança dinâmica ativa e passiva simulando ataques em ambiente controlado de homologação. | Relatório consolidado contendo os alertas de segurança gerados pela ferramenta de varredura ativa. | Mitigação e correção técnica validada de todos os alertas classificados com severidade Crítica ou Alta. |
+| **7. Implantação (Deployment)** | Provisionamento seguro de servidores, hardening de contêineres e deploy automatizado via CI/CD. | Scripts de automação de infraestrutura revisados e certificados criptográficos SSL/TLS configurados. | Build de produção gerado com sucesso sem avisos de configuração incorreta ou portas administrativas expostas. |
+| **8. Operação e Monitoramento** | Registro contínuo de logs de auditoria estruturados e aplicação de regras de correlação de alertas. | Trilha de auditoria em JSON centralizada e roteiro de resposta rápida pós-alertas de segurança. | Metadados de logs obrigatórios integrados de forma inviolável e servidores de logs protegidos contra exclusão. |
 
 ---
 
