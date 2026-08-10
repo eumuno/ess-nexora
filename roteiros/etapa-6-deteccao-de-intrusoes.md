@@ -6,13 +6,71 @@ Este roteiro organiza controles de detecção para os riscos priorizados da Nexo
 
 ## 6.1 Fundamentação de Detecção de Intrusões
 
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+### O que é Detecção de Intrusões?
+A detecção de intrusões consiste no processo de monitoramento contínuo de um ambiente computacional (seja no nível de rede, hosts ou no nível de aplicação) com o objetivo de identificar comportamentos anômalos, desvios de políticas de uso ou sinais de atividades maliciosas em andamento. Em uma aplicação web como a Nexora, o foco principal é a detecção no nível da aplicação, analisando requisições, logs de auditoria e fluxos transacionais para identificar abusos lógicos e tentativas de ataque que simulam tráfego legítimo.
+
+### Diferença Técnica: Prevenir vs. Detectar
+No contexto de Engenharia de Software Seguro e com base nas melhores práticas do NIST Cybersecurity Framework, as ações preventivas e as ações detectivas atuam em camadas complementares de defesa:
+
+1. **Prevenir (Função Protect):** É uma abordagem ativa e restritiva. Consiste em estabelecer barreiras técnicas, controles e salvaguardas com o intuito de impedir que uma ameaça se concretize ou explore uma vulnerabilidade existente. O objetivo é bloquear o incidente na origem antes que ocorra dano. Exemplos: controle de acesso multifator (MFA), criptografia em trânsito e em repouso,Prepared Statements para injeção de código, sanitização de entrada e mecanismos de limitação de taxa (Rate Limiting).
+2. **Detectar (Função Detect):** É uma abordagem de observabilidade e vigilância. Assume-se a premissa de que nenhuma barreira preventiva é 100% infalível e de que incidentes inevitavelmente ocorrerão. A detecção foca na análise de logs, monitoramento de métricas de desempenho e disparo de alertas em tempo real ao identificar anomalias lógicas, bypasses de controles ou atividades suspeitas. O objetivo é dar visibilidade imediata ao evento para mitigar o impacto. Exemplos: logs de auditoria detalhados, alarmes de uso anormal de recursos, correlação de logs de segurança e sistemas de monitoramento comportamental.
+
+Em resumo, a prevenção atua de forma proativa para **evitar o incidente**, enquanto a detecção atua de forma reativa/contínua para **identificar o incidente em andamento** e acionar as defesas de contenção.
 
 ---
 
 ## 6.2 Eventos de Log Necessários na Nexora
 
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
+Para sustentar as regras de monitoramento, o backend da plataforma Nexora deve alimentar uma trilha de auditoria centralizada, protegida e protegida contra exclusão intencional, permitindo a investigação completa de incidentes.
+
+### 6.2.1 Eventos Específicos que Devem ser Registrados
+Os eventos críticos mapeados para o ecossistema da Nexora são categorizados em seis grupos de interesse:
+
+1. **Tentativas de Autenticação e Gestão de Credenciais (Sessão):**
+   - Tentativas de login bem-sucedidas e malsucedidas (especialmente falhas sucessivas).
+   - Bloqueio de contas por excesso de tentativas (Rate Limiting acionado).
+   - Solicitações de alteração de senhas ou reset de chaves de recuperação.
+   - Ativação ou desativação de dispositivos confiáveis e autenticação de múltiplos fatores (MFA).
+   - Desconexões forçadas (logout) e expiração de sessões JWT.
+
+2. **Alterações Administrativas e de Privilégios (Acesso):**
+   - Criação, atualização ou exclusão de contas com perfis privilegiados (Administradores, Moderadores, Equipe Financeira).
+   - Elevação de privilégios de qualquer usuário (ex: um Aluno promovido a Instrutor).
+   - Consultas de leitura ou exportação de logs brutos executadas por usuários do suporte.
+
+3. **Operações Financeiras Sensíveis (Faturamento):**
+   - Alteração ou inclusão de dados de recebimento financeiro (chaves Pix e contas bancárias de instrutores).
+   - Processamento de transações, estornos parciais ou totais e falhas de pagamento enviadas pelo gateway integrado.
+   - Liberação de assinaturas ou cursos efetuadas de forma manual pelo suporte financeiro.
+
+4. **Operações Acadêmicas e Publicação de Conteúdo:**
+   - Criação, edição e exclusão de videoaulas, cursos ou materiais complementares (PDFs) por instrutores.
+   - Alteração manual de notas de avaliações acadêmicas, progresso de alunos ou redefinição de trilhas por moderadores.
+   - Solicitação e emissão de certificados digitais de conclusão de curso.
+
+5. **Interação Social e Moderação (Fóruns):**
+   - Moderações ativas (exclusão de comentários, remoção de posts ofensivos e aplicação de banimentos).
+   - Requisições sequenciais excessivas em perfis de usuários no fórum (padrão indicativo de raspagem massiva ou IDOR).
+
+6. **Eventos do Servidor de Banco de Dados e Sistema:**
+   - Detecção de payloads maliciosos ou falhas de validação de entrada nas APIs de backend.
+   - Erros do lado do servidor (status HTTP 500) gerados em rotas sensíveis de dados.
+
+### 6.2.2 Atributos e Estrutura dos Registros de Logs (Metadados)
+Cada entrada registrada no sistema de log de auditoria deve ser encapsulada em um formato estruturado (JSON) e possuir o seguinte esquema de dados obrigatório para viabilizar auditorias técnicas:
+
+* **id_log:** Hash criptográfico sequencial único do registro para garantir integridade.
+* **timestamp:** Data e hora exata da ocorrência, sincronizada centralmente via protocolo de tempo NTP (Network Time Protocol) para evitar divergências.
+* **id_operador:** Identificador único (User ID) do usuário que realizou a ação (ou "Anônimo" para fluxos de visitantes).
+* **perfil_operador:** Papel do usuário logado no momento do evento (Aluno, Instrutor, Administrador, etc.).
+* **tipo_evento:** Tag taxonômica específica do evento para facilitar a filtragem (ex: AUTH_LOGIN_FAIL, FIN_BANK_UPDATE, ACAD_CERT_GENERATE).
+* **ip_origem:** Endereço IP do cliente que submeteu a requisição que originou o registro.
+* **agente_usuario:** String do User-Agent descrevendo o navegador e o sistema operacional de origem.
+* **recurso_afetado:** Identificador único do elemento que sofreu a ação (ex: id_curso, id_aluno, id_certificado).
+* **estado_anterior:** Hash ou objeto representativo dos valores dos dados antes de sofrerem alteração (para modificações sensíveis).
+* **estado_posterior:** Hash ou objeto representativo dos valores gravados após a modificação.
+* **resultado:** Indicativo booleano de sucesso ou falha na tentativa de execução da operação.
+* **justificativa_operador:** Texto explicativo obrigatório inserido por usuários em rotas de moderação ou faturamento crítico.
 
 ---
 
