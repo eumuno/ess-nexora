@@ -1,0 +1,57 @@
+================================================================================
+NEXORA - PLATAFORMA DE ENSINO ONLINE
+ETAPA 4 - CÓDIGO SEGURO E TESTES DE SEGURANÇA
+ESPECIFICAÇÃO DE TESTES DA PRÁTICA 1 (MFA E RATE LIMITING)
+Responsável: Gabriela B.
+Mapeado contra: pratica1-mfa-rate-limiting.pseudo (Bruna Rosa Ferreira)
+================================================================================
+
+[TS01] Login Válido com MFA (MFA_SUCCESS)
+--------------------------------------------------------------------------------
+Descrição: Validar se o fluxo completo de autenticação em duas etapas é 
+           concluído com sucesso para perfis administrativos.
+Endpoint de Origem: post_login(requisicao)
+Endpoint de Destino: post_validar_mfa(requisicao)
+
+Passo 1 (Autenticação Primária):
+  - Enviar requisição POST para login com e-mail e senha corretos de um "Instrutor".
+  - Retorno esperado: HTTP 200 com mfaRequired: VERDADEIRO e um mfaStepToken válido.
+
+Passo 2 (Autenticação Secundária):
+  - Enviar requisição POST para post_validar_mfa contendo o mfaStepToken recebido 
+    e o totpCode (código de 6 dígitos) correto correspondente ao mfa_segredo.
+- Retorno esperado: HTTP 200 contendo o token_sessao_definitivo (JWT) e autorização 
+  de acesso ao sistema.
+
+--------------------------------------------------------------------------------
+
+[TS02] Login com Código MFA Inválido (MFA_INVALID_TOKEN)
+--------------------------------------------------------------------------------
+Descrição: Validar se o sistema impede o login de um usuário administrativo que
+           forneça credenciais básicas válidas, mas falhe no código do segundo fator.
+Endpoint de Destino: post_validar_mfa(requisicao)
+
+Ação:
+  - Enviar requisição POST para post_validar_mfa com um mfaStepToken íntegro, 
+    mas enviando no campo totpCode um código inválido, expirado ou em branco.
+Retorno Esperado:
+  - O sistema incrementa o contador de tentativas do IP (incrementar_registro_tentativas_temporario).
+  - Retorna HTTP 401 com a mensagem: "Código de autenticação multifator inválido ou expirado."
+  - O token de sessão definitiva não é emitido.
+
+--------------------------------------------------------------------------------
+
+[TS03] Bloqueio por Força Bruta no Rate Limiting (RATE_LIMIT_BLOCKED)
+--------------------------------------------------------------------------------
+Descrição: Validar se o mecanismo de rate limit bloqueia requisições excessivas 
+           de um mesmo IP após atingir o limite definido no pseudocódigo.
+Endpoints Testados: post_login(requisicao) e post_validar_mfa(requisicao)
+
+Ação:
+  - Realizar 5 tentativas sucessivas de login com dados incorretos a partir do mesmo IP.
+  - Na 6ª tentativa, submeter uma requisição de login (mesmo com credenciais corretas).
+Retorno Esperado:
+  - A função verificar_rate_limit(ip_cliente) detecta que o número de tentativas acumuladas 
+    no IP é igual ou maior que 5.
+  - O sistema bloqueia a requisição imediatamente (antes de validar a senha ou o MFA).
+  - Retorna HTTP 429 com a mensagem: "Limite de tentativas excedido. Bloqueado por 15 minutos."
