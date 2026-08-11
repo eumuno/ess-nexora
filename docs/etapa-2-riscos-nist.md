@@ -239,6 +239,42 @@ delegue o processamento de pagamentos a um gateway externo, permanece
 responsável por validar as respostas recebidas e por responder aos seus
 usuários e às autoridades competentes.
 
+### 2.7.1 Estratégia escolhida para cada risco
+
+| Risco | Nível inicial | Estratégia principal | Justificativa da escolha |
+| :--- | :---: | :--- | :--- |
+| **R01 — Uso indevido de conta** | Alto (9) | **Reduzir** | O acesso remoto autenticado é a função central da plataforma e não pode ser eliminado. A probabilidade é reduzida com MFA para perfis privilegiados e limitação de tentativas, conforme o requisito RS01. |
+| **R02 — Cadastro de instrutor falso** | Médio (6) | **Reduzir** | O cadastro aberto de instrutores é o próprio modelo de negócio de um marketplace educacional; evitá-lo eliminaria a oferta de cursos. A homologação documental reduz a probabilidade sem impedir a entrada de novos profissionais. |
+| **R03 — Phishing com e-mails falsos** | Alto (9) | **Reduzir e compartilhar** | SPF, DKIM e DMARC reduzem a aceitação de mensagens falsificadas, mas a eficácia depende dos servidores de destino e do provedor de envio, que executam parte do controle fora da infraestrutura da Nexora. |
+| **R04 — Forjamento de callback de pagamento** | Médio (6) | **Reduzir e compartilhar** | A validação HMAC e a reconsulta ao gateway reduzem o risco, enquanto a emissão da assinatura, a rotação das chaves e a confirmação da transação pertencem ao provedor de pagamento contratado. |
+| **R05 — Adulteração de registros acadêmicos e financeiros** *(Tampering)* | A definir na Seção 2.4 | **Reduzir** | As operações de progresso, avaliação, compra e publicação de conteúdo precisam continuar disponíveis. O tratamento atua sobre a validação no servidor e sobre a integridade dos registros, não sobre a existência da funcionalidade. |
+| **R06 — Negação de operações realizadas** *(Repudiation)* | A definir na Seção 2.4 | **Reduzir e aceitar o residual** | Registros completos e protegidos reduzem substancialmente as contestações sem prova, mas nenhum controle elimina a possibilidade de um usuário negar uma operação. O residual é aceito de forma consciente, condicionado à existência de trilha de auditoria confiável. |
+| **R07 — Exposição de dados pessoais e conteúdo pago** *(Information Disclosure)* | A definir na Seção 2.4 | **Reduzir** | Os dados são necessários à operação e à emissão de certificados, de modo que evitar sua coleta não é viável. O tratamento concentra-se em autorização no servidor, minimização e monitoramento de consultas anômalas. |
+| **R08 — Indisponibilidade da plataforma** *(Denial of Service)* | A definir na Seção 2.4 | **Reduzir e compartilhar** | Limitação de requisições e monitoramento de capacidade são responsabilidade da Nexora, enquanto a absorção de tráfego volumétrico e a entrega de vídeo dependem de provedores de nuvem e de distribuição de conteúdo contratados. |
+| **R09 — Elevação indevida de privilégio** *(Elevation of Privilege)* | A definir na Seção 2.4 | **Reduzir** | As funções administrativas, de moderação e financeiras são indispensáveis à operação. O tratamento incide sobre a verificação de autorização no servidor e sobre a revisão periódica das permissões concedidas. |
+
+### 2.7.2 Observações sobre as estratégias não adotadas
+
+**Nenhum risco recebeu a estratégia Evitar.** A eliminação da atividade de
+origem exigiria suprimir funcionalidades que definem a Nexora: autenticação
+remota, cadastro aberto de instrutores, pagamentos on-line, emissão de
+certificados e distribuição de videoaulas. Como o custo de negócio seria
+integral e a redução por controles é viável em todos os casos, a estratégia foi
+descartada de forma justificada, e não por omissão.
+
+**A estratégia Aceitar não foi adotada de forma isolada em nenhum risco.** Ela
+aparece apenas em R06, e somente sobre o residual que permanece depois da
+redução. Aceitar integralmente um risco alto ou crítico antes de qualquer
+tratamento seria incompatível com a criticidade dos ativos identificados na
+Seção 1.3.2, especialmente credenciais, dados pessoais e registros financeiros.
+
+**As estratégias de R05 a R09 permanecem válidas independentemente dos valores
+finais de probabilidade e impacto**, pois derivam da natureza da categoria
+STRIDE de origem e da essencialidade da funcionalidade envolvida. Os níveis
+iniciais deverão ser preenchidos assim que a Seção 2.4 for concluída, e os
+rótulos dos riscos deverão ser alinhados aos nomes definitivos registrados
+naquela seção.
+
 ---
 
 ## 2.8 Apresentação das Funções do NIST CSF 2.0
