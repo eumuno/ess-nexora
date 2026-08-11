@@ -126,3 +126,63 @@ e a que custo.
 As decisões referem-se ao projeto da plataforma e não a uma implementação já
 existente. Sua eficácia deverá ser confirmada pelos casos de teste da Etapa 4 e
 pela verificação da Etapa 5.
+
+### DA01 — Centralização da autenticação em serviço dedicado, com limitação de taxa na borda
+
+| Campo | Descrição |
+| :--- | :--- |
+| **Risco tratado** | R01 — Uso indevido de conta por *credential stuffing* (Alto, 9) |
+| **Requisito atendido** | RS01 |
+| **Ameaças de origem** | T01, T21 |
+
+**Problema tratado.** A Nexora expõe autenticação por múltiplos pontos de
+entrada — Portal Web, Aplicativo Móvel e futuras integrações. Se cada interface
+implementar sua própria verificação de credenciais e sua própria contagem de
+tentativas, a política de segurança passa a existir em versões divergentes:
+basta que um único ponto de entrada não aplique o bloqueio para que o atacante
+concentre nele todo o volume de tentativas. O mesmo vale para o segundo fator,
+que perde o efeito se puder ser contornado por um caminho alternativo.
+
+**Decisão adotada.** A validação de credenciais, a emissão de tokens e a
+verificação do segundo fator (TOTP) ficam concentradas em um **Serviço de
+Autenticação e Autorização dedicado**, que é o único componente autorizado a
+emitir um token de sessão válido. A limitação de taxa é posicionada **antes**,
+no **API Gateway**, atuando como filtro de borda comum a todas as interfaces.
+As interfaces não validam credenciais: apenas encaminham a requisição e
+consomem o resultado.
+
+**Motivo da escolha.** A separação entre os dois pontos é intencional e
+corresponde a objetivos distintos. O *rate limiting* na borda protege o custo
+computacional: tentativas automatizadas são descartadas antes que o servidor
+gaste processamento verificando hashes de senha, o que também reduz a
+exposição a T21, em que o volume de tentativas afeta usuários legítimos. Já a
+centralização da verificação garante que exista **um único caminho possível**
+até um token válido, de modo que a exigência de MFA para Instrutor e
+Administrador não possa ser contornada por outra interface.
+
+**Alternativas descartadas.**
+
+- *Validação de credenciais em cada interface.* Rejeitada por multiplicar a
+  superfície de ataque e tornar a política de bloqueio inconsistente entre
+  Portal e Aplicativo.
+- *MFA obrigatório para todos os perfis, incluindo Aluno.* Rejeitada por
+  desproporcionalidade: elevaria significativamente o atrito de acesso do
+  público majoritário da plataforma para tratar um risco cuja consequência mais
+  grave — alteração de dados de repasse e de conteúdo de cursos — está
+  concentrada nos perfis privilegiados. A decisão pode ser revista se o registro
+  de riscos passar a apontar impacto equivalente sobre contas de aluno.
+- *Bloqueio permanente da conta após falhas consecutivas.* Rejeitada por
+  converter um controle de proteção em vetor de negação de serviço: um atacante
+  poderia inviabilizar contas conhecidas de propósito. Optou-se por bloqueio
+  temporário associado à origem da requisição.
+
+**Componentes afetados.** API Gateway & Core (filtro de limitação), Serviço de
+Autenticação (MFA/JWT), Banco de Dados Relacional (segredo TOTP e hashes),
+Servidor de Logs & Auditoria (eventos de tentativa e bloqueio) e ambas as
+interfaces de usuário.
+
+**Resultado esperado.** Um atacante de posse de credenciais válidas de um
+Instrutor não obtém sessão sem o segundo fator, independentemente da interface
+utilizada. Tentativas automatizadas são interrompidas na borda antes de
+consumirem recursos de verificação, e cada tentativa e bloqueio fica registrado
+para a regra de detecção RD01 da Etapa 6.
