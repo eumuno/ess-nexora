@@ -111,4 +111,18 @@ Os controles de segurança são representados visualmente por ícones de proteç
 ---
 
 ## 3.4 Decisões de Arquitetura
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+Esta seção registra as decisões de projeto adotadas para mitigar os riscos
+prioritários identificados na Seção 2.6. Enquanto os requisitos da Seção 3.1
+estabelecem **o que** o sistema deve garantir e sob qual critério de
+verificação, as decisões a seguir estabelecem **como** e **onde** essas
+garantias serão posicionadas na arquitetura da Nexora.
+
+Cada decisão registra o problema tratado, a decisão adotada, o motivo da
+escolha, as alternativas descartadas, os componentes afetados e o resultado
+esperado. As alternativas descartadas são registradas deliberadamente: uma
+decisão de arquitetura só é justificável quando se conhece o que foi rejeitado
+e a que custo.
+
+As decisões referem-se ao projeto da plataforma e não a uma implementação já
+existente. Sua eficácia deverá ser confirmada pelos casos de teste da Etapa 4 e
+pela verificação da Etapa 5.
