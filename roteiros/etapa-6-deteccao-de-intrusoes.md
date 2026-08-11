@@ -98,15 +98,14 @@ A terceira regra de detecção foi projetada especificamente para mitigar o risc
 | Campo | Descrição |
 | :--- | :--- |
 | **Regra** | **RD03 — Tentativa de Varredura ou Raspagem de Dados de Perfis (IDOR / Data Scraping)** |
-| **Risco observado** | R07 / T03 / CA04 — Vazamento de informações e exposição indevida de dados pessoais de alunos (como CPF e e-mail) por manipulação de parâmetros. |
+| **Risco observado** | R15 / T15 / CA04 — Vazamento de informações e exposição indevida de dados pessoais de alunos (como CPF e e-mail) por manipulação de parâmetros. |
 | **Fonte de dados** | Logs de requisições HTTP do API Gateway e do Servidor Web (direcionados ao endpoint `/api/v1/users/perfil`), contendo ID do usuário autenticado, IP de origem, cabeçalhos de requisição e status de retorno HTTP. |
 | **Condição de alerta** | Alerta de **prioridade alta** quando uma mesma credencial de usuário autenticada (ou um mesmo IP não autenticado de Visitante) realizar requisições para **mais de 30 IDs de perfis diferentes em um intervalo menor que 2 minutos**. |
 | **Resposta inicial** | Revogação imediata do token de sessão ativo (JWT) do usuário requisitante, bloqueio temporário do IP de origem no API Gateway por 1 hora e registro do evento no servidor de auditoria para investigação detalhada. |
 
 ### 6.4.1 Justificativa e Limitações da RD03
-A regra **RD03** é essencial para detectar comportamentos automatizados de raspagem de dados (*scraping*) antes que um atacante consiga mapear e extrair dados em massa de toda a base de estudantes da Nexora.
 
-Como limitação operacional, comportamentos legítimos de navegação rápida por páginas do fórum de dúvidas ou perfis de instrutores podem gerar potenciais falsos positivos. Por isso, o limiar de 30 requisições em 2 minutos é calibrado para capturar apenas requisições em velocidades e volumes característicos de ferramentas automatizadas, e não de navegação humana comum.
+A regra RD03 é essencial para detectar comportamentos automatizados de raspagem de dados (*scraping*) antes que ocorra a extração em massa da base de dados de estudantes da Nexora. Como limitação operacional, comportamentos legítimos de navegação rápida pelas páginas do fórum de dúvidas ou perfis de instrutores podem gerar potenciais falsos positivos. O limiar de 30 requisições em 2 minutos é dimensionado para capturar apenas requisições em velocidades e volumes característicos de ferramentas automatizadas, minimizando o impacto sobre a navegação humana comum.
 
 ---
 
