@@ -363,7 +363,7 @@ a maior parte das ameaças da Nexora decorre de validação insuficiente no
 servidor sobre entradas originadas fora do limite de confiança, situação que se
 trata prevenindo a operação indevida e registrando a tentativa.
 
-Os riscos com marcação nas seis funções — R01, R02, R04, R05, R07, R08 e R09 —
+Os riscos com marcação nas seis funções R01, R02, R04, R05, R07, R08 e R09
 são aqueles em que um incidente produz um estado que precisa ser desfeito:
 conta comprometida, curso liberado sem pagamento, matrícula alterada, dado
 pessoal exposto ou serviço interrompido. São também os riscos que exigem o
