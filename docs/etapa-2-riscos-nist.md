@@ -308,7 +308,22 @@ implementados.
 ---
 
 ## 2.9 Mapeamento dos Riscos para as Funções do NIST CSF
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+A tabela cruzada indica quais funções do NIST CSF 2.0 precisam ser consideradas
+no tratamento de cada risco identificado. A marcação significa que a função
+produz um resultado relevante para aquele risco; ela não implica que todas as
+funções tenham o mesmo peso ou a mesma quantidade de controles associados.
+
+| Risco | Govern | Identify | Protect | Detect | Respond | Recover |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **R01 — Uso indevido de conta** | X | X | X | X | X | X |
+| **R02 — Cadastro de instrutor falso** | X | X | X | X | X | X |
+| **R03 — Phishing com e-mails falsos** | X | X | X | X | X | — |
+| **R04 — Forjamento de callback de pagamento** | X | X | X | X | X | X |
+| **R05 — Adulteração de registros** *(Tampering)* | X | X | X | X | X | X |
+| **R06 — Negação de operações** *(Repudiation)* | X | — | X | X | X | — |
+| **R07 — Exposição de dados** *(Information Disclosure)* | X | X | X | X | X | X |
+| **R08 — Indisponibilidade** *(Denial of Service)* | X | X | X | X | X | X |
+| **R09 — Elevação de privilégio** *(Elevation of Privilege)* | X | X | X | X | X | X |
 
 ---
 
