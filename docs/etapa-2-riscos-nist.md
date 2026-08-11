@@ -278,7 +278,32 @@ naquela seção.
 ---
 
 ## 2.8 Apresentação das Funções do NIST CSF 2.0
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+
+O **NIST Cybersecurity Framework 2.0** foi adotado para organizar os resultados
+de segurança esperados no tratamento dos riscos da Nexora. O framework não
+prescreve tecnologias nem produtos: ele descreve **resultados** que uma
+organização deve alcançar, permitindo que cada projeto escolha os controles
+adequados ao seu contexto.
+
+A versão 2.0 organiza esses resultados em seis funções. A função **Govern** é a
+principal novidade em relação à versão anterior e reconhece que decisões de
+segurança dependem de responsabilidades, políticas e critérios definidos, e não
+apenas de mecanismos técnicos.
+
+| Função | Finalidade geral | Aplicação no projeto Nexora |
+| :--- | :--- | :--- |
+| **Govern** | Estabelecer políticas, papéis, responsabilidades e critérios de aceitação de riscos. | Definir quem aprova a homologação de instrutores, quem responde pelas chaves do gateway, qual o critério de risco residual aceitável e com que periodicidade as permissões são revisadas. |
+| **Identify** | Conhecer os ativos, dependências, vulnerabilidades e riscos do sistema. | Corresponde ao trabalho já realizado nas Seções 1.3 e 1.4 e neste registro de riscos: inventário de ativos, perfis de acesso, fluxos de dados, limites de confiança e dependências externas. |
+| **Protect** | Implementar salvaguardas que reduzam a probabilidade ou o impacto dos incidentes. | Autenticação multifator, limitação de tentativas, autorização verificada no servidor, validação de assinatura HMAC, minimização de dados e proteção do conteúdo pago. |
+| **Detect** | Identificar eventos suspeitos, falhas e possíveis incidentes. | Registro de eventos de autenticação, callbacks rejeitados, consultas anômalas a perfis, alertas de capacidade e monitoramento das operações administrativas. |
+| **Respond** | Conter, analisar, comunicar e tratar os incidentes detectados. | Bloqueio temporário de origem, suspensão preventiva de contas privilegiadas, congelamento da liberação de cursos e comunicação às equipes de segurança, financeira e jurídica. |
+| **Recover** | Restaurar serviços e dados e reduzir os prejuízos causados. | Redefinição de credenciais, reversão de alterações indevidas em matrículas e certificados, reprocessamento de conciliações financeiras e restabelecimento do acesso após confirmação de identidade. |
+
+As funções não são etapas sequenciais nem possuem a mesma relevância para todos
+os riscos. Um risco pode exigir forte atuação em Protect e pouca em Recover, ou
+o inverso. Elas também não substituem a análise de risco: indicam quais
+resultados precisam ser considerados, e não quais controles devem ser
+implementados.
 
 ---
 
