@@ -325,6 +325,50 @@ funções tenham o mesmo peso ou a mesma quantidade de controles associados.
 | **R08 — Indisponibilidade** *(Denial of Service)* | X | X | X | X | X | X |
 | **R09 — Elevação de privilégio** *(Elevation of Privilege)* | X | X | X | X | X | X |
 
+### 2.9.1 Justificativa das lacunas do mapeamento
+
+As três ausências de marcação são deliberadas e foram justificadas para evitar
+o preenchimento automático de todas as células, que esvaziaria o valor
+analítico da tabela.
+
+**R03 — Recover não marcado.** O phishing ocorre fora da infraestrutura da
+Nexora: a mensagem falsa é enviada por um terceiro e nada da plataforma é
+danificado pelo envio em si. Não há serviço a restaurar nem dado a recuperar. A
+consequência recuperável do phishing é o comprometimento da conta, que já está
+coberto pela função Recover do risco R01, para o qual esse cenário funciona
+como vetor de entrada.
+
+**R06 — Identify não marcado.** A negação de uma operação não decorre de um
+ativo desconhecido ou de uma dependência não mapeada, e sim da insuficiência
+dos registros produzidos. O tratamento se concentra em definir o que deve ser
+registrado (Govern), garantir a produção e a integridade dos registros
+(Protect), consultá-los diante de uma contestação (Detect) e conduzir a
+apuração (Respond).
+
+**R06 — Recover não marcado.** Uma trilha de auditoria não restaura serviço nem
+reverte estado. Se uma contestação revelar uma alteração indevida que precise
+ser desfeita, a reversão pertence ao risco de adulteração (R05), e não ao risco
+de repúdio. Manter a distinção preserva a rastreabilidade entre cada risco e o
+resultado de segurança que ele efetivamente exige.
+
+### 2.9.2 Leitura do mapeamento
+
+Todos os riscos exigem atuação em **Govern**, porque cada um depende de uma
+decisão registrada: quem aprova instrutores, quem custodia as chaves do
+gateway, qual o limite aceitável de indisponibilidade e com que periodicidade as
+permissões privilegiadas são revisadas.
+
+A concentração em **Protect** e **Detect** confirma o que a Etapa 1 já indicava:
+a maior parte das ameaças da Nexora decorre de validação insuficiente no
+servidor sobre entradas originadas fora do limite de confiança, situação que se
+trata prevenindo a operação indevida e registrando a tentativa.
+
+Os riscos com marcação nas seis funções — R01, R02, R04, R05, R07, R08 e R09 —
+são aqueles em que um incidente produz um estado que precisa ser desfeito:
+conta comprometida, curso liberado sem pagamento, matrícula alterada, dado
+pessoal exposto ou serviço interrompido. São também os riscos que exigem o
+plano de tratamento mais completo, detalhado na Seção 2.10.
+
 ---
 
 ## 2.10 Plano de Tratamento
