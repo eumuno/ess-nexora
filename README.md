@@ -21,8 +21,8 @@ O projeto está estruturado de forma incremental nas pastas do repositório, fac
 
 | Etapa | Conteúdo e Entregáveis | Documento de Referência | Status |
 | :---: | :--- | :--- | :---: |
-| **Etapa 1** | Modelagem de Ameaças (STRIDE) e Casos de Abuso | [docs/etapa-1-ameacas-stride.md](docs/etapa-1-ameacas-stride.md) | 🔄 Em Progresso |
-| **Etapa 2** | Análise e Plano de Tratamento de Riscos (NIST CSF 2.0) | [docs/etapa-2-riscos-nist.md](docs/etapa-2-riscos-nist.md) | 🔄 Em Progresso |
+| **Etapa 1** | Modelagem de Ameaças (STRIDE) e Casos de Abuso | [docs/etapa-1-ameacas-stride.md](docs/etapa-1-ameacas-stride.md) | ✅ Concluído |
+| **Etapa 2** | Análise e Plano de Tratamento de Riscos (NIST CSF 2.0) | [docs/etapa-2-riscos-nist.md](docs/etapa-2-riscos-nist.md) | ✅ Concluído |
 | **Etapa 3** | Requisitos, Decisões de Arquitetura e Diagrama Seguro | [docs/etapa-3-arquitetura-segura.md](docs/etapa-3-arquitetura-segura.md) | 🔄 Em Progresso |
 | **Etapa 4** | Código Seguro (ASVS) e Casos de Teste | [docs/etapa-4-codigo-seguro.md](docs/etapa-4-codigo-seguro.md) | 🔄 Em Progresso |
 | **Etapa 5** | Verificação de Vulnerabilidades com OWASP ZAP | [evidencias/etapa-5/relatorio-da-verificacao.md](evidencias/etapa-5/relatorio-da-verificacao.md) | 🔄 Em Progresso |
