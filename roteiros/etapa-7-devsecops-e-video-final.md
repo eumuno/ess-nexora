@@ -25,12 +25,12 @@ A tabela a seguir mapeia cada momento do pipeline, as atividades de segurança c
 
 ## 7.2 Condições de Bloqueio (Gates de Segurança)
 
-| Gate | Fase | Condição de bloqueio | Evidência utilizada | Responsável pela análise | Condição para liberação |
-| :---: | :--- | :--- | :--- | :--- |
-| **G01** | Testes de segurança | Teste obrigatório de autenticação, autorização ou callback falha, incluindo TS03/TS04. | Relatório com teste, entrada, esperado e obtido. | Desenvolvimento e responsável técnico. | Corrigir, executar a suíte afetada novamente e anexar aprovação. |
-| **G02** | SAST/SCA/DAST | Vulnerabilidade crítica, ou alta explorável, sem análise, responsável e tratamento. | Relatório e triagem com severidade e alcance. | Segurança, desenvolvimento e responsável pelo componente. | Corrigir/mitigar e revalidar; exceção exige justificativa, prazo e controle compensatório. |
-| **G03** | Commit e integração contínua | Scanner identifica segredo válido no repositório, artefato ou log de build. | Relatório mascarado do scanner. | Desenvolvimento e infraestrutura. | Remover, revogar/rotacionar a credencial e repetir a varredura. |
-| **G04** | Preparação da entrega | Artefato obrigatório sem evidência verificável. | Checklist do repositório e validação de caminhos. | Responsável da etapa e coordenação. | Adicionar/corrigir, validar e revisar o artefato. |
+| Gate | Fase e bloqueio | Evidência | Análise e liberação |
+| :---: | :--- | :--- | :--- |
+| **G01** | **Testes:** falha em teste obrigatório de autenticação, autorização ou callback (TS03/TS04). | Relatório com teste, entrada, resultado esperado e obtido. | **Desenvolvimento e responsável técnico.** Corrigir, repetir a suíte afetada e anexar aprovação. |
+| **G02** | **SAST/SCA/DAST:** vulnerabilidade crítica, ou alta explorável, sem análise e tratamento. | Relatório do scanner e triagem com severidade e alcance. | **Segurança, desenvolvimento e responsável pelo componente.** Corrigir/mitigar e revalidar; exceção exige justificativa, prazo e controle compensatório. |
+| **G03** | **Commit/CI:** scanner identifica segredo válido no repositório, artefato ou log de build. | Relatório mascarado do scanner. | **Desenvolvimento e infraestrutura.** Remover o segredo, revogar/rotacionar a credencial e repetir a varredura. |
+| **G04** | **Entrega:** artefato obrigatório sem evidência verificável. | Checklist e validação de caminhos. | **Responsável da etapa e coordenação.** Adicionar/corrigir, validar e revisar o artefato. |
 
 Os gates exigem evidência, responsável e decisão registrada; uma exceção não pode apenas ignorar um alerta.
 
