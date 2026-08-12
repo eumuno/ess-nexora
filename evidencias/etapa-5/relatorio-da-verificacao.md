@@ -109,6 +109,95 @@ Para mitigar em definitivo a vulnerabilidade de SQL Injection na plataforma Nexo
 
 3. **Princípio do Menor Privilégio no Banco de Dados:**
    A conta de serviço do banco de dados utilizada pela aplicação Nexora não deve possuir permissões de superusuário (admin/root). Ela deve ser restrita estritamente aos privilégios necessários para as tabelas de uso diário (ex: `SELECT`, `INSERT`, `UPDATE`), impedindo comandos de manipulação estrutural como `DROP TABLE` ou acesso ao sistema operacional.
+
+### 5.2.2 Análise Detalhada do Alerta 2 (A02)
+
+#### Descrição do Achado
+A varredura do OWASP ZAP classificou como alerta de severidade **alta** a
+existência de um **Redirecionamento Externo (Open Redirect)** na aplicação-alvo.
+A falha ocorre quando a aplicação recebe um endereço de destino por meio de um
+parâmetro controlado pelo usuário e executa o redirecionamento sem verificar se
+esse destino pertence ao próprio domínio ou a uma lista previamente autorizada.
+
+O ponto crítico é que a requisição inicial parte de um endereço legítimo. Para o
+usuário e para filtros de reputação de domínio, o vínculo aparente é com a
+aplicação confiável, e não com o destino final.
+
+#### Evidência Extraída
+* **Severidade:** Alta (High) / Alerta vermelho no painel do OWASP ZAP.
+* **Origem do achado:** Varredura ativa (*Active Scan*) sobre a instância local
+  do OWASP Juice Shop em `http://localhost:3000`, executada em 09 de agosto de
+  2026.
+* **Confirmação prática da exploração:** durante a varredura, a própria
+  aplicação-alvo sinalizou a resolução do desafio **"Allowlist Bypass — Enforce
+  a redirect to a page you are not supposed to redirect to"**, registrado na
+  captura `06-efeito-do-ataque-no-juiceshop.png`. O desafio só é marcado como
+  concluído quando um redirecionamento efetivamente escapa da lista de destinos
+  permitidos, o que confirma a exploração e não apenas a detecção do alerta.
+* **Comportamento observado:** o mecanismo de validação de destino foi
+  contornado, permitindo que a requisição fosse redirecionada para um endereço
+  fora dos destinos autorizados pela aplicação.
+* **Registros visuais:** painel consolidado em `05-zap-alertas-gerados.png` e
+  confirmação da exploração em `06-efeito-do-ataque-no-juiceshop.png`.
+
+#### Impacto Real no Sistema Nexora
+Caso essa condição existisse na plataforma Nexora, o impacto se somaria a um
+risco já mapeado na Etapa 2:
+
+1. **Ampliação do risco R03 (phishing):** o atacante distribuiria um endereço
+   iniciado no domínio oficial da Nexora, que conduziria a uma página de login
+   falsa. Isso contorna a principal orientação dada aos usuários — conferir o
+   domínio do link — e reduz a eficácia dos controles de autenticação de e-mail
+   definidos no requisito RS02.
+2. **Vazamento de dados de sessão pelo cabeçalho `Referer`:** se o
+   redirecionamento ocorresse a partir de uma página autenticada, o endereço de
+   origem poderia ser transmitido ao site externo, expondo identificadores
+   presentes na URL. Esse efeito se agrava pela condição descrita no alerta A03.
+3. **Encadeamento com o risco R01:** credenciais obtidas por essa via alimentam
+   diretamente o cenário de uso indevido de conta, incluindo o caso de abuso
+   CA03, de desvio de repasses financeiros de instrutores.
+4. **Dano reputacional:** endereços maliciosos associados ao domínio
+   institucional podem comprometer a reputação de envio da Nexora e afetar a
+   entrega de suas mensagens legítimas.
+
+#### Relação CWE / OWASP
+* **CWE-601:** Redirecionamento de URL para Site Não Confiável (*Open
+  Redirect*).
+* **OWASP Top 10:2021:** Categoria **A01:2021 — Broken Access Control**, que
+  incorpora o redirecionamento não validado.
+* **Referência complementar:** OWASP Unvalidated Redirects and Forwards Cheat
+  Sheet.
+
+#### Correção Técnica Proposta
+1. **Eliminar o destino controlado pelo cliente.** Substituir a URL recebida por
+   um identificador interno resolvido no servidor:
+
+```javascript
+   // Destinos permitidos, resolvidos exclusivamente no servidor
+   const DESTINOS = {
+     painel:       '/dashboard',
+     curso:        '/cursos',
+     certificados: '/certificados'
+   };
+
+   const destino = DESTINOS[req.query.destino] ?? '/';
+   return res.redirect(destino);
+```
+
+2. **Validar após a normalização, não antes.** O nome do desafio resolvido
+   — *Allowlist Bypass* — indica que a aplicação possuía uma lista de destinos
+   permitidos, mas sua verificação foi contornada. A comparação deve incidir
+   sobre o *host* já normalizado e decodificado, nunca sobre o texto bruto da
+   URL, e a lista deve ser de permissão explícita, jamais de bloqueio.
+
+3. **Exigir confirmação explícita para saídas legítimas.** Quando o destino
+   externo for parte do fluxo — como o retorno do gateway de pagamento —
+   apresentar uma página intermediária informando o domínio de destino antes de
+   prosseguir.
+
+4. **Restringir o vazamento pelo cabeçalho `Referer`.** Aplicar a política
+   `Referrer-Policy: strict-origin-when-cross-origin`, impedindo que o caminho
+   completo da página de origem seja transmitido a terceiros.
    
 ## 5.3 Possíveis falsos positivos e alertas descartados
 
