@@ -78,10 +78,6 @@ Esta tabela realiza o mapeamento biunívoco de todas as 24 ameaças identificada
 
 As justificativas técnicas apresentadas a seguir detalham a análise lógica de probabilidade, impacto, ativos afetados e possíveis consequências para cada um dos 24 riscos operacionais mapeados para a plataforma Nexora. A classificação fundamenta-se nos critérios descritos nas Seções 2.1 e 2.2 deste relatório.
 
-## 2.5 Justificativa das Avaliações
-
-As justificativas técnicas apresentadas a seguir detalham a análise lógica de probabilidade, impacto, ativos afetados e possíveis consequências para cada um dos 24 riscos operacionais mapeados para a plataforma Nexora. A classificação fundamenta-se nos critérios descritos nas Seções 2.1 e 2.2 deste relatório.
-
 ### R01 — Uso indevido de conta por credential stuffing
 
 * **Origem e caso de abuso relacionado:** T01 — *Spoofing*; CA03 — Sequestro de conta de instrutor para desvio de repasses financeiros.
