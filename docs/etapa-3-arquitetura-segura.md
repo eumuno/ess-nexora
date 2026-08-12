@@ -327,7 +327,7 @@ As três decisões introduzem custos que o grupo assume conscientemente.
 
 **DA01** cria um ponto único de falha lógico: se o Serviço de Autenticação
 ficar indisponível, nenhum usuário acessa a plataforma. A concentração é
-aceita porque a alternativa — verificação distribuída entre interfaces —
+aceita porque a alternativa (verificação distribuída entre interfaces)
 substituiria um risco de disponibilidade por um risco de inconsistência da
 política de segurança, de consequência mais grave. A mitigação pertence ao
 tratamento do risco R08.
