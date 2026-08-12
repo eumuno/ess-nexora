@@ -181,4 +181,63 @@ Integration Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Third_Pa
 ---
 
 ### 4.2.3 Implementação e Referência OWASP
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+
+Para mitigar o risco **R04 — Forjamento de notificações de callback de
+pagamento** e atender ao requisito **RS03**, foi projetada a lógica de
+verificação do endpoint `POST /api/v1/payments/callback`. A implementação
+segue a decisão de arquitetura **DA02**, que estabelece o tratamento do callback
+como notificação, e não como autorização de liberação.
+
+#### A. Referência Oficial OWASP Utilizada
+
+A lógica foi estruturada a partir da **OWASP Third Party Payment Gateway
+Integration Cheat Sheet**, complementada pela **OWASP Cryptographic Storage
+Cheat Sheet** quanto à comparação de valores criptográficos e pela **OWASP
+Logging Cheat Sheet** quanto ao registro de eventos sem exposição de dados
+sensíveis. As orientações aplicadas garantem que:
+
+1. A notificação recebida do gateway é autenticada na origem antes de produzir
+   qualquer efeito, por meio da verificação da assinatura **HMAC-SHA256**.
+2. A comparação da assinatura utiliza **função de tempo constante**, e não o
+   operador de igualdade comum, evitando que a diferença de tempo de resposta
+   revele progressivamente o valor esperado.
+3. O status do pagamento é confirmado por **consulta reversa servidor a
+   servidor** à API oficial do gateway, de modo que a liberação nunca dependa
+   exclusivamente do que a mensagem recebida afirma.
+4. O valor, a moeda e o pedido informados são reconferidos contra os registros
+   locais, e não aceitos como enviados.
+5. O processamento é **idempotente**, evitando que o reenvio legítimo de um
+   callback produza dupla liberação ou duplo registro financeiro.
+
+#### B. Comportamento do Código e Lógica de Negócio
+
+A verificação é organizada em seis etapas sequenciais, todas executadas **antes**
+de qualquer alteração de estado. A ordem é deliberada: as verificações mais
+baratas e mais decisivas vêm primeiro, de modo que uma requisição forjada seja
+descartada sem consumir consulta ao banco nem chamada externa.
+
+1. **Presença e formato da assinatura.** Ausência do cabeçalho de assinatura ou
+   do identificador de transação encerra o processamento com `401`. Nenhuma
+   consulta é realizada.
+2. **Verificação da assinatura HMAC-SHA256.** O servidor recalcula o HMAC sobre
+   o corpo bruto da requisição usando a chave secreta compartilhada e compara o
+   resultado com o valor recebido por função de tempo constante. O corpo é lido
+   em sua forma original, pois qualquer reserialização alteraria o hash.
+3. **Proteção contra reprocessamento (idempotência).** Se o identificador de
+   transação já constar como processado, o servidor responde `200` confirmando
+   o estado atual, **sem** repetir a liberação. O reenvio é comportamento
+   normal de gateways e não deve ser tratado como ataque.
+4. **Existência e estado do pedido.** O pedido é localizado e precisa estar
+   pendente. Pedido inexistente, cancelado ou já pago não avança.
+5. **Correspondência de valor e moeda.** Valor e moeda informados são comparados
+   com os registros locais do pedido. Divergência encerra o processamento e
+   trata também a ameaça T06, em que o preço é adulterado no cliente.
+6. **Confirmação reversa junto ao gateway.** A API consulta a transação
+   diretamente na API oficial do provedor. Somente se o status retornado for de
+   pagamento aprovado é que o pedido transita para pago e o curso associado é
+   liberado, em operação única.
+
+Todas as rejeições são registradas com horário, pedido, origem e motivo
+sanitizado. **A chave secreta, a assinatura recebida e os dados financeiros
+completos nunca são gravados em log**, conforme o critério de auditoria definido
+na Seção 4.2.2.
