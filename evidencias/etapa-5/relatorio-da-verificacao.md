@@ -67,8 +67,8 @@ Registro do comportamento observado na interface do OWASP Juice Shop durante a e
 | ID | Alerta ou achado | Evidência | Possível impacto | Relação CWE/OWASP | Correção proposta |
 | :---: | :--- | :--- | :--- | :--- | :--- |
 | A01 | **Injeção SQL (SQL Injection)** | Alerta vermelho (High) no painel de alertas do OWASP ZAP (Active Scan), evidenciando que parâmetros enviados via requisições HTTP foram concatenados de forma direta em queries executadas no banco de dados da aplicação de testes. | Um atacante pode burlar a autenticação (ex.: logar como administrador sem senha), extrair dados sensíveis (LGPD), alterar notas/certificados de alunos ou comprometer totalmente o servidor do banco de dados. | CWE-89 (Neutralização Inadequada de Elementos Especiais em Comandos SQL) e OWASP Top 10:2021 — A03: Injection. | Implementar o uso mandatório de consultas parametrizadas (Prepared Statements) ou a utilização segura de um mapeador objeto-relacional (ORM), além de sanitização rigorosa de inputs no backend. |
-| A02 | **Pendente — Pacote C, se encontrado** | Pendente | Pendente | Pendente | Pendente |
-| A03 | **Pendente — Pacote C, se encontrado** | Pendente | Pendente | Pendente | Pendente |
+| A02 | **Redirecionamento Externo (Open Redirect)** | Alerta vermelho (High) no painel do OWASP ZAP, com exploração confirmada pela resolução do desafio *Allowlist Bypass* registrada na captura `06-efeito-do-ataque-no-juiceshop.png`. | Um atacante pode construir um endereço que começa no domínio legítimo e termina em um site sob seu controle, aumentando a eficácia de campanhas de phishing e podendo vazar dados de sessão pelo cabeçalho `Referer`. | CWE-601 (Redirecionamento de URL para Site Não Confiável) e OWASP Top 10:2021 — A01: Broken Access Control. | Substituir o destino recebido do cliente por identificadores internos resolvidos no servidor e validar o *host* já normalizado contra lista de permissão explícita. |
+| A03 | **Session ID in URL Rewrite** | Alerta laranja (Medium), classificado como *Systemic* no painel do OWASP ZAP em `05-zap-alertas-gerados.png`, evidenciando o identificador de sessão presente na *query string* das requisições. | O identificador de sessão fica exposto em histórico de navegador, logs de servidor e proxies e no cabeçalho `Referer`, permitindo que um atacante reutilize a sessão de um usuário autenticado sem conhecer sua senha. | CWE-598 (Uso do Método GET com Strings de Query Contendo Dados Sensíveis) e OWASP Top 10:2021 — A07: Identification and Authentication Failures. | Transportar o identificador exclusivamente por cookie com `HttpOnly`, `Secure` e `SameSite`, rejeitando qualquer sessão recebida por parâmetro de URL. |
 
 ### 5.2.1 Análise Detalhada do Alerta 1 (A01)
 
@@ -109,6 +109,185 @@ Para mitigar em definitivo a vulnerabilidade de SQL Injection na plataforma Nexo
 
 3. **Princípio do Menor Privilégio no Banco de Dados:**
    A conta de serviço do banco de dados utilizada pela aplicação Nexora não deve possuir permissões de superusuário (admin/root). Ela deve ser restrita estritamente aos privilégios necessários para as tabelas de uso diário (ex: `SELECT`, `INSERT`, `UPDATE`), impedindo comandos de manipulação estrutural como `DROP TABLE` ou acesso ao sistema operacional.
+
+### 5.2.2 Análise Detalhada do Alerta 2 (A02)
+
+#### Descrição do Achado
+A varredura do OWASP ZAP classificou como alerta de severidade **alta** a
+existência de um **Redirecionamento Externo (Open Redirect)** na aplicação-alvo.
+A falha ocorre quando a aplicação recebe um endereço de destino por meio de um
+parâmetro controlado pelo usuário e executa o redirecionamento sem verificar se
+esse destino pertence ao próprio domínio ou a uma lista previamente autorizada.
+
+O ponto crítico é que a requisição inicial parte de um endereço legítimo. Para o
+usuário e para filtros de reputação de domínio, o vínculo aparente é com a
+aplicação confiável, e não com o destino final.
+
+#### Evidência Extraída
+* **Severidade:** Alta (High) / Alerta vermelho no painel do OWASP ZAP.
+* **Origem do achado:** Varredura ativa (*Active Scan*) sobre a instância local
+  do OWASP Juice Shop em `http://localhost:3000`, executada em 09 de agosto de
+  2026.
+* **Confirmação prática da exploração:** durante a varredura, a própria
+  aplicação-alvo sinalizou a resolução do desafio **"Allowlist Bypass — Enforce
+  a redirect to a page you are not supposed to redirect to"**, registrado na
+  captura `06-efeito-do-ataque-no-juiceshop.png`. O desafio só é marcado como
+  concluído quando um redirecionamento efetivamente escapa da lista de destinos
+  permitidos, o que confirma a exploração e não apenas a detecção do alerta.
+* **Comportamento observado:** o mecanismo de validação de destino foi
+  contornado, permitindo que a requisição fosse redirecionada para um endereço
+  fora dos destinos autorizados pela aplicação.
+* **Registros visuais:** painel consolidado em `05-zap-alertas-gerados.png` e
+  confirmação da exploração em `06-efeito-do-ataque-no-juiceshop.png`.
+
+#### Impacto Real no Sistema Nexora
+Caso essa condição existisse na plataforma Nexora, o impacto se somaria a um
+risco já mapeado na Etapa 2:
+
+1. **Ampliação do risco R03 (phishing):** o atacante distribuiria um endereço
+   iniciado no domínio oficial da Nexora, que conduziria a uma página de login
+   falsa. Isso contorna a principal orientação dada aos usuários — conferir o
+   domínio do link — e reduz a eficácia dos controles de autenticação de e-mail
+   definidos no requisito RS02.
+2. **Vazamento de dados de sessão pelo cabeçalho `Referer`:** se o
+   redirecionamento ocorresse a partir de uma página autenticada, o endereço de
+   origem poderia ser transmitido ao site externo, expondo identificadores
+   presentes na URL. Esse efeito se agrava pela condição descrita no alerta A03.
+3. **Encadeamento com o risco R01:** credenciais obtidas por essa via alimentam
+   diretamente o cenário de uso indevido de conta, incluindo o caso de abuso
+   CA03, de desvio de repasses financeiros de instrutores.
+4. **Dano reputacional:** endereços maliciosos associados ao domínio
+   institucional podem comprometer a reputação de envio da Nexora e afetar a
+   entrega de suas mensagens legítimas.
+
+#### Relação CWE / OWASP
+* **CWE-601:** Redirecionamento de URL para Site Não Confiável (*Open
+  Redirect*).
+* **OWASP Top 10:2021:** Categoria **A01:2021 — Broken Access Control**, que
+  incorpora o redirecionamento não validado.
+* **Referência complementar:** OWASP Unvalidated Redirects and Forwards Cheat
+  Sheet.
+
+#### Correção Técnica Proposta
+1. **Eliminar o destino controlado pelo cliente.** Substituir a URL recebida por
+   um identificador interno resolvido no servidor:
+
+```javascript
+   // Destinos permitidos, resolvidos exclusivamente no servidor
+   const DESTINOS = {
+     painel:       '/dashboard',
+     curso:        '/cursos',
+     certificados: '/certificados'
+   };
+
+   const destino = DESTINOS[req.query.destino] ?? '/';
+   return res.redirect(destino);
+```
+
+2. **Validar após a normalização, não antes.** O nome do desafio resolvido
+   — *Allowlist Bypass* — indica que a aplicação possuía uma lista de destinos
+   permitidos, mas sua verificação foi contornada. A comparação deve incidir
+   sobre o *host* já normalizado e decodificado, nunca sobre o texto bruto da
+   URL, e a lista deve ser de permissão explícita, jamais de bloqueio.
+
+3. **Exigir confirmação explícita para saídas legítimas.** Quando o destino
+   externo for parte do fluxo — como o retorno do gateway de pagamento —
+   apresentar uma página intermediária informando o domínio de destino antes de
+   prosseguir.
+
+4. **Restringir o vazamento pelo cabeçalho `Referer`.** Aplicar a política
+   `Referrer-Policy: strict-origin-when-cross-origin`, impedindo que o caminho
+   completo da página de origem seja transmitido a terceiros.
+
+   ### 5.2.3 Análise Detalhada do Alerta 3 (A03)
+
+#### Descrição do Achado
+O OWASP ZAP registrou o alerta **Session ID in URL Rewrite**, de severidade
+**média** e classificado como *Systemic*, indicando que o identificador de
+sessão trafega na *query string* das requisições em vez de ser transportado
+exclusivamente por cookie.
+
+A classificação como sistêmica é relevante: o alerta não decorre de um endpoint
+isolado, mas de uma característica do mecanismo de gerenciamento de sessão da
+aplicação, afetando potencialmente todas as requisições autenticadas.
+
+#### Evidência Extraída
+* **Severidade:** Média (Medium) / Alerta laranja, marcado como *Systemic* no
+  painel do OWASP ZAP.
+* **Origem do achado:** Varredura sobre a instância local do OWASP Juice Shop em
+  `http://localhost:3000`, na sessão executada em 09 de agosto de 2026.
+* **Condição identificada:** presença de parâmetro de identificação de sessão na
+  URL das requisições registradas pela ferramenta. Por se tratar de achado
+  sistêmico, a condição não se restringe a um único endpoint, e sim ao
+  mecanismo de sessão adotado pela aplicação.
+* **Alertas correlatos na mesma sessão:** *Cookie No HttpOnly Flag* e
+  *Information Disclosure — Information in Browser sessionStorage*, ambos
+  relacionados à proteção inadequada de dados de sessão, o que reforça a
+  natureza sistêmica do problema.
+* **Registro visual:** painel consolidado de alertas em
+  `05-zap-alertas-gerados.png`.
+
+#### Impacto Real no Sistema Nexora
+O identificador de sessão equivale, em efeito prático, à credencial do usuário
+autenticado. Sua presença na URL o expõe em quatro locais fora do controle da
+aplicação:
+
+1. **Histórico e cache do navegador:** em computadores compartilhados —
+   laboratórios, bibliotecas e ambientes corporativos, comuns entre o público de
+   uma plataforma EAD — a sessão permanece recuperável após o uso.
+2. **Registros de servidores e intermediários:** URLs completas costumam ser
+   gravadas em logs de acesso, proxies e serviços de distribuição de conteúdo,
+   ampliando o alcance da exposição e agravando a ameaça T18 da Etapa 1.
+3. **Cabeçalho `Referer` enviado a terceiros:** ao carregar um recurso externo,
+   o navegador pode transmitir a URL de origem, entregando o identificador a um
+   domínio não relacionado. Combinado ao alerta A02, o vazamento deixa de
+   depender de um recurso externo qualquer e pode ser induzido pelo atacante.
+4. **Compartilhamento involuntário:** um aluno que copie o endereço de uma aula
+   para enviar a um colega transmite junto sua própria sessão.
+
+A consequência direta é o **sequestro de sessão sem conhecimento da senha**.
+Isso agrava o risco R01 por uma via que os controles do requisito RS01 não
+alcançam: a autenticação multifator protege o momento do login, mas não impede
+o reúso de uma sessão já estabelecida. Se a conta pertencer a um instrutor ou
+administrador, o atacante alcança as funções privilegiadas descritas nas
+ameaças T22 e T23.
+
+#### Relação CWE / OWASP
+* **CWE-598:** Uso do Método GET com Strings de Query Contendo Informação
+  Sensível.
+* **CWE-384:** Fixação de Sessão (*Session Fixation*), condição relacionada
+  quando o identificador pode ser imposto por parâmetro.
+* **OWASP Top 10:2021:** Categoria **A07:2021 — Identification and
+  Authentication Failures**.
+* **Referência complementar:** OWASP Session Management Cheat Sheet.
+
+#### Correção Técnica Proposta
+1. **Transportar a sessão exclusivamente por cookie, com atributos de
+   proteção.**
+
+```javascript
+   res.cookie('sessionId', tokenSessao, {
+     httpOnly: true,     // inacessível a JavaScript, reduz o impacto de XSS
+     secure:   true,     // transmitido apenas sobre HTTPS
+     sameSite: 'strict', // não enviado em requisições originadas por terceiros
+     maxAge:   1000 * 60 * 30
+   });
+```
+
+2. **Rejeitar sessões recebidas por parâmetro de URL.** A aplicação não deve
+   aceitar identificador de sessão fora do cookie, sob nenhuma condição de
+   compatibilidade. Aceitá-lo como alternativa preserva integralmente o vetor
+   de ataque.
+
+3. **Renovar o identificador na elevação de privilégio.** Emitir novo
+   identificador imediatamente após o login e após a validação do segundo fator,
+   invalidando o anterior. Essa medida trata a fixação de sessão e complementa
+   diretamente a decisão de arquitetura DA01.
+
+4. **Aplicar `Referrer-Policy` e limitar o tempo de vida da sessão.** Reduzir a
+   janela de reúso por meio de expiração por inatividade e encerramento
+   explícito no *logout*, com invalidação do lado do servidor e não apenas
+   remoção do cookie no cliente.
    
 ## 5.3 Possíveis falsos positivos e alertas descartados
 
