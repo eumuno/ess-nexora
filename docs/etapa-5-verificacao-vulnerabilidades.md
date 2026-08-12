@@ -1,94 +1,42 @@
 # 5 — Verificação de Vulnerabilidades
 
-Este documento constitui o **Relatório de Verificação de Vulnerabilidades**, atendendo às exigências da Etapa 5 do trabalho prático. O escopo desta atividade consiste na realização de testes de segurança dinâmicos (DAST) em uma aplicação controlada, analisando possíveis falhas de segurança por meio de varreduras automatizadas, interpretando seus alertas e propondo correções.
+## 5.1 Objetivo e escopo
 
----
+Esta etapa demonstra a verificação dinâmica de segurança (DAST) em ambiente de
+laboratório controlado. A Nexora é documental e não possui aplicação executável
+versionada; por isso, os resultados são do OWASP Juice Shop e não constituem
+falhas comprovadas da Nexora. A relação com a Nexora é feita apenas como análise
+de impacto e de controles que seriam aplicáveis à plataforma.
 
-## 5.1 Ambiente e Configuração de Varredura
-### 5.1.1 Justificativa do Ambiente de Laboratório
+## 5.2 Metodologia
 
-A plataforma **Nexora** é um projeto de software concebido de maneira **100% fictícia e documental**, o que significa que o grupo não possui uma implementação web executável em ambiente de produção para ser testada diretamente.
+1. Executar o OWASP Juice Shop localmente, isolado de sistemas externos.
+2. Configurar o OWASP ZAP para o alvo autorizado `http://localhost:3000`.
+3. Realizar o mapeamento e a varredura ativa dentro do escopo definido.
+4. Guardar capturas e relatórios na pasta `evidencias/etapa-5/`.
+5. Analisar cada alerta com evidência, impacto, relação CWE/OWASP, correção e
+   possível falso positivo antes de classificá-lo como confirmado ou descartado.
 
-Para suprir essa limitação técnica e cumprir os objetivos pedagógicos da disciplina, a equipe estabeleceu um ambiente de laboratório seguro utilizando o **OWASP Juice Shop**. O Juice Shop é uma aplicação web de código aberto e deliberadamente vulnerável, desenvolvida para fins de treinamento e educação em segurança de aplicações web.
+## 5.3 Ambiente resumido
 
-Essa abordagem permite que o grupo execute uma sessão de varredura dinâmica real, avalie as saídas de segurança de uma ferramenta de DAST e desenvolva as análises técnicas de risco necessárias para a consolidação deste relatório.
+| Item | Informação |
+| :--- | :--- |
+| Aplicação-alvo | OWASP Juice Shop v20.1.1 |
+| Execução | Docker Desktop v4.85.0 em Windows 11 |
+| Endereço e escopo | `http://localhost:3000`, somente ambiente local autorizado |
+| Ferramenta DAST | OWASP ZAP v2.17.0 |
+| Data documentada | 09 de agosto de 2026 |
+| Responsável pela execução | Bruna Rosa Ferreira |
 
-### 5.1.2 Especificação Técnica do Ambiente de Testes
+## 5.4 Resultado e encaminhamento
 
-Para garantir a reprodutibilidade dos testes e a validade científica das evidências, o setup do laboratório foi configurado com os seguintes parâmetros técnicos:
+As imagens da execução e o relatório detalhado estão em
+[`evidencias/etapa-5/`](../evidencias/etapa-5/). O relatório de consolidação
+centraliza a tabela de achados, as análises dos integrantes, falsos positivos,
+alertas descartados e limitações:
 
-*   **Sistema Operacional da Máquina de Testes:** Windows 11
-*   **Ambiente de Execução de Containers:** Docker Desktop (v4.85.0)
-*   **Aplicação Alvo (Testada):** OWASP Juice Shop (v20.1.1)
-*   **Endereço de Acesso Local:** `http://localhost:3000`
-*   **Porta de Comunicação:** 3000
-*   **Ferramenta de Varredura Ativa (DAST):** OWASP ZAP (ZAP Version: 2.17.0)
-*   **Escopo do Teste:** Restrito estritamente à aplicação Juice Shop rodando localmente na porta de testes da equipe, sem interações com serviços de terceiros externos ou sistemas públicos de produção.
-*   **Data de Execução da Varredura:** 09 de agosto de 2026
-*   **Responsável pela Execução:** Bruna Rosa Ferreira
+- [Relatório detalhado da verificação](../evidencias/etapa-5/relatorio-da-verificacao.md)
 
----
-
-### 5.1.3 Evidências da Execução (Varredura de Segurança)
-
-Os registros visuais a seguir comprovam a configuração do ambiente de laboratório, a execução da varredura automatizada pelo OWASP ZAP e os alertas identificados durante a sessão de testes. Todos os arquivos estão salvos na pasta de evidências do repositório.
-
-#### 1. Aplicação-Alvo em Execução
-
-O container Docker do OWASP Juice Shop foi iniciado e disponibilizado localmente na porta 3000.
-![01 - Juice Shop Executando](../evidencias/etapa-5/01-juice-shop-executando.png)
-
-#### 2. Configuração de Escopo e Alvo no OWASP ZAP
-
-Configuração do OWASP ZAP apontando a varredura para a instância local do Juice Shop.
-![02 - ZAP Configuração Básica](../evidencias/etapa-5/02-zap-configuracao-basica.png)
-
-#### 3. Início da Varredura e Mapeamento da Aplicação
-
-Registro do início da sessão de testes realizada pelo OWASP ZAP, incluindo o processo inicial de identificação e mapeamento dos recursos da aplicação.
-![03 - ZAP Varredura Iniciando](../evidencias/etapa-5/03-zap-varredura-iniciando.png)
-
-#### 4. Varredura Dinâmica em Progresso (Active Scan)
-
-Registro da execução do Active Scan do OWASP ZAP sobre a aplicação-alvo, durante a qual a ferramenta realizou requisições automatizadas para verificar possíveis vulnerabilidades.
-![04 - ZAP Varredura Ativa](../evidencias/etapa-5/04-zap-varredura-ativa.png)
-
-#### 5. Painel Consolidado de Alertas Gerados
-
-Painel de alertas do OWASP ZAP apresentando os achados identificados durante a sessão de verificação e suas respectivas classificações de risco.
-![05 - ZAP Alertas Gerados](../evidencias/etapa-5/05-zap-alertas-gerados.png)
-
-#### 6. Efeito Visível das Requisições de Ataque no Alvo
-
-Registro do comportamento observado na interface do OWASP Juice Shop durante a execução das requisições automatizadas realizadas pelo scanner.
-![06 - Efeito do Ataque no JuiceShop](../evidencias/etapa-5/06-efeito-do-ataque-no-juiceshop.png)
-
----
-
-## 5.2 Tabela Geral de Achados e Alertas
-*(PARTE DE INAURRARA; favor, apagar depois de preencher)*
-
----
-
-## 5.3 Análise Detalhada do Alerta 1 (A01)
-*(PARTE DA GABRIELA; favor, apagar depois de preencher)*
-
----
-
-## 5.4 Análise Detalhada do Alerta 2 (A02)
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
-
----
-
-## 5.5 Análise Detalhada do Alerta 3 (A03)
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
-
----
-
-## 5.6 Análise de Falsos Positivos e Alertas Descartados
-*(PARTE DE INAURRARA; favor, apagar depois de preencher)*
-
----
-
-## 5.7 Considerações Finais da Etapa 5
-*(PARTE DE INAURRARA; favor, apagar depois de preencher)*
+O Alerta 1 é analisado pela Gabriela; os Alertas 2 e 3, caso existam, são
+analisados pelo Erik. A consolidação final depende dessas análises e da revisão
+dos possíveis falsos positivos.
