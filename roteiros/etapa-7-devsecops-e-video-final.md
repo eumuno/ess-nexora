@@ -330,8 +330,140 @@ anteriores.
 > Até aqui, tudo que apresentamos é prevenção. Mas nenhuma barreira é infalível,
 > e é por isso que a Etapa 6 trata de detecção.
 >
-> Prevenir é
+> Prevenir é impedir que o incidente aconteça. Detectar é assumir que ele pode
+> acontecer mesmo assim e garantir que alguém perceba.
+>
+> [mostrar as regras RD01 e RD02]
+>
+> A **RD01** dispara quando um mesmo IP falha o login em cinco contas diferentes
+> em dez minutos — o que caracteriza um ataque distribuído, não um usuário que
+> esqueceu a senha. E a **RD02** observa callbacks com assinatura inválida.
+>
+> Repare que as duas vigiam exatamente os pontos que protegemos nas etapas
+> anteriores: elas existem para o caso de aqueles controles falharem ou serem
+> contornados.
 
+---
+
+#### Bloco 6B — Regra RD03 e roteiro de resposta
+**Responsável:** Bruna · **Duração:** 6:05 – 6:20 · **Tela:** `roteiros/etapa-6-deteccao-de-intrusoes.md`, Seções 6.4 e 6.5
+
+**Direção.** Apresentar a terceira regra e resumir as quatro fases da resposta a
+incidentes.
+
+**Fala sugerida.**
+
+> A **RD03** trata do caso de abuso CA04: dispara quando um mesmo usuário
+> consulta mais de trinta perfis diferentes em menos de dois minutos, volume
+> típico de ferramenta automatizada, não de navegação humana.
+>
+> E o roteiro de resposta define o que acontece depois do alerta, em quatro
+> fases: triagem nos primeiros quinze minutos, contenção com bloqueio
+> temporário, erradicação com troca forçada de credenciais e recuperação. Se
+> houver vazamento efetivo de dados pessoais, entra a notificação prevista na
+> LGPD.
+
+---
+
+#### Bloco 7A — Pipeline DevSecOps
+**Responsável:** Gabriela · **Duração:** 6:20 – 6:40 · **Tela:** `roteiros/etapa-7-devsecops-e-video-final.md`, Seção 7.1
+
+**Direção.** Percorrer os momentos do pipeline associando cada um à evidência
+que produz.
+
+**Fala sugerida.**
+
+> Para fechar, a Etapa 7 conecta tudo isso a um pipeline DevSecOps.
+>
+> [mostrar a tabela do pipeline]
+>
+> A ideia é que a segurança não seja uma fase no fim do projeto, e sim uma
+> atividade presente em cada momento. No planejamento, o STRIDE e a análise de
+> riscos. No código, as práticas seguras e os testes. Na verificação, o ZAP. E na
+> operação, os logs e as regras de detecção.
+>
+> Cada momento produz uma evidência — e é essa evidência que autoriza seguir
+> para o próximo.
+
+---
+
+#### Bloco 7B — Gates de segurança
+**Responsável:** Inaurrara · **Duração:** 6:40 – 6:52 · **Tela:** `roteiros/etapa-7-devsecops-e-video-final.md`, Seção 7.2
+
+**Direção.** Apresentar os quatro gates e enfatizar a exigência de evidência e
+responsável em cada bloqueio.
+
+**Fala sugerida.**
+
+> Definimos quatro gates de segurança, que são as condições que impedem a
+> continuidade do pipeline.
+>
+> [mostrar a tabela de gates]
+>
+> Teste de segurança reprovado, vulnerabilidade crítica sem análise, segredo
+> encontrado no repositório e artefato obrigatório sem evidência.
+>
+> O ponto central é que cada bloqueio exige evidência, responsável e decisão
+> registrada. Uma exceção precisa de justificativa, prazo e controle
+> compensatório — nunca simplesmente ignorar o alerta.
+
+---
+
+#### Bloco 7C — Aprendizados e encerramento
+**Responsável:** Erik · **Duração:** 6:52 – 7:00 · **Tela:** `roteiros/etapa-7-devsecops-e-video-final.md`, Seção 7.3
+
+**Direção.** Sintetizar o aprendizado do grupo, assumir a principal limitação do
+trabalho e encerrar.
+
+**Fala sugerida.**
+
+> O principal aprendizado do grupo foi perceber que a segurança não vem de um
+> controle isolado, e sim de uma cadeia rastreável: da ameaça ao risco, do risco
+> ao requisito, do requisito à decisão de arquitetura, ao código, ao teste e ao
+> gate de entrega.
+>
+> Nossa maior limitação foi não ter uma implementação executável, o que impede
+> confirmar empiricamente a eficácia dos controles propostos.
+>
+> Obrigado pela atenção!
+
+---
+
+### 7.4.4 Cobertura dos itens obrigatórios
+
+| Item exigido pelo enunciado | Bloco | Responsável |
+| :--- | :---: | :--- |
+| 1. Sistema escolhido | 1 | Bruna |
+| 2. Principais ameaças e casos de abuso | 2A | Gabriela |
+| 3. Riscos prioritários | 2B | Inaurrara |
+| 4. Decisões de arquitetura | 3 | Erik |
+| 5. Práticas de código seguro | 4A e 4B | Bruna e Erik |
+| 6. Principais resultados da verificação | 5A e 5B | Bruna e Gabriela |
+| 7. Regras de detecção | 6A e 6B | Inaurrara e Bruna |
+| 8. Pipeline DevSecOps proposto | 7A e 7B | Gabriela e Inaurrara |
+| 9. Aprendizados do grupo | 7C | Erik |
+
+Todos os nove itens estão cobertos e os quatro integrantes participam da
+apresentação, atendendo à exigência de participação individual. A distribuição
+segue a contribuição de cada um nas etapas correspondentes, de modo que a
+avaliação individual possa ser relacionada aos commits do repositório.
+
+### 7.4.5 Margem de tempo e ajustes possíveis
+
+O roteiro está dimensionado em 7 minutos, com 1 minuto de margem até o limite
+de 8. Cada integrante deve cronometrar a própria fala antes da gravação
+definitiva, pois a leitura tende a ser mais lenta do que a estimativa.
+
+Caso a gravação ultrapasse o previsto, os cortes devem ocorrer nesta ordem,
+preservando os itens obrigatórios:
+
+1. Reduzir a rolagem de tabelas nos Blocos 2A e 4A, mantendo apenas a menção ao
+   volume do mapeamento.
+2. Resumir as alternativas descartadas no Bloco 3 a um único exemplo.
+3. Encurtar a descrição do ambiente de laboratório no Bloco 5A, mantendo a
+   ressalva metodológica, que não deve ser suprimida.
+
+Nenhum dos nove itens obrigatórios pode ser removido para ajuste de tempo.
 ---
 
 ## 7.5 Entrega do Vídeo Final
