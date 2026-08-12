@@ -174,3 +174,53 @@ Os registros descritos na Seção 6.2 seguem o princípio da minimização: senh
 códigos de segundo fator, chaves HMAC, assinaturas completas e dados
 financeiros integrais **não são registrados em nenhuma hipótese**, conforme já
 estabelecido nas regras RD01 e RD02.
+
+### 6.6.3 Rastreabilidade das regras de detecção
+
+| Regra | Ameaça (Etapa 1) | Risco (Etapa 2) | Caso de abuso | Requisito ou decisão relacionada |
+| :---: | :---: | :---: | :---: | :--- |
+| **RD01** | T01 | R01 | CA03 | RS01 e DA01 — MFA e limitação de tentativas |
+| **RD02** | T04 | R04 | — | RS03 e DA02 — validação HMAC do callback |
+| **RD03** | T15 | R15 | CA04 | Autorização em nível de objeto na API |
+
+A tabela evidencia que nenhuma regra foi criada de forma isolada: cada uma
+deriva de uma ameaça modelada na Etapa 1, avaliada como risco na Etapa 2 e, nos
+casos de RD01 e RD02, já tratada por um requisito e uma decisão de arquitetura
+nas Etapas 3 e 4.
+
+Essa correspondência sustenta a complementaridade descrita na Seção 6.1: RD01 e
+RD02 observam justamente os pontos em que os controles preventivos poderiam
+falhar ou ser contornados, enquanto RD03 cobre um risco cujo tratamento depende
+de verificação de autorização a cada requisição, condição em que o
+monitoramento comportamental é especialmente relevante.
+
+### 6.6.4 Cobertura dos riscos e limitações do escopo
+
+As três regras cobrem os riscos de maior prioridade em três frentes distintas —
+identidade, integridade financeira e confidencialidade dos dados pessoais. A
+escolha atende ao número mínimo previsto no enunciado e evita concentrar a
+detecção em uma única categoria de ameaça.
+
+Assume-se, contudo, que **três regras não cobrem todo o registro de riscos da
+Etapa 2**. Permanecem sem regra dedicada, entre outros, os riscos associados à
+adulteração de registros acadêmicos, à falsificação de certificados e à
+indisponibilidade da plataforma. Esses riscos continuam tratados por controles
+preventivos das Etapas 3 e 4, e a ampliação do conjunto de regras é um
+desdobramento natural do trabalho, condicionado à calibração das três primeiras
+com dados reais.
+
+### 6.6.5 Conformidade com o entregável mínimo
+
+| Item exigido pelo enunciado | Seção correspondente | Situação |
+| :--- | :---: | :---: |
+| Explicar o que é detecção de intrusões | 6.1 | ✅ |
+| Explicar a diferença entre prevenir e detectar | 6.1 | ✅ |
+| Indicar quais eventos deveriam ser registrados | 6.2 | ✅ |
+| Apresentar três regras simples de detecção | 6.3 e 6.4 | ✅ |
+| Definir o que acontece depois de um alerta | 6.5 | ✅ |
+| Campos obrigatórios de cada regra: risco observado, fonte de dados, condição de alerta e resposta inicial | 6.3 e 6.4 | ✅ |
+
+As três regras apresentam os quatro campos exigidos, e cada uma acompanha uma
+subseção de justificativa e limitações — 6.3.1 e 6.4.1 — que registra as
+condições capazes de gerar falso positivo. O documento está armazenado no
+caminho previsto, `roteiros/etapa-6-deteccao-de-intrusoes.md`.
