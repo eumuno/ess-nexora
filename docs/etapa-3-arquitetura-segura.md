@@ -305,3 +305,46 @@ ser rejeitadas pelos servidores de destino que honram DMARC. As mensagens
 legítimas deixam de conter o elemento que o phishing precisa imitar, e um link
 de recuperação interceptado perde validade após o primeiro uso ou o
 vencimento do prazo.
+
+### 3.4.1 Rastreabilidade das decisões
+
+| Ameaça | Risco | Requisito | Decisão | Vulnerabilidade de referência |
+| :---: | :---: | :---: | :---: | :--- |
+| T01, T21 | R01 | RS01 | **DA01** | CWE-307, CWE-308 |
+| T03, T17 | R03 | RS02 | **DA03** | CWE-290 |
+| T04, T06 | R04 | RS03 | **DA02** | CWE-346, CWE-354 |
+
+A cadeia percorre a análise completa: a ameaça foi identificada pelo STRIDE na
+Etapa 1, avaliada e priorizada como risco na Etapa 2, convertida em requisito
+verificável na Seção 3.1, relacionada a uma fraqueza catalogada na Seção 3.2,
+posicionada na arquitetura da Seção 3.3 e, por fim, justificada como decisão de
+projeto nesta seção. Os controles das decisões correspondem aos ícones de
+proteção representados no diagrama de arquitetura segura.
+
+### 3.4.2 Consequências e limitações assumidas
+
+As três decisões introduzem custos que o grupo assume conscientemente.
+
+**DA01** cria um ponto único de falha lógico: se o Serviço de Autenticação
+ficar indisponível, nenhum usuário acessa a plataforma. A concentração é
+aceita porque a alternativa — verificação distribuída entre interfaces —
+substituiria um risco de disponibilidade por um risco de inconsistência da
+política de segurança, de consequência mais grave. A mitigação pertence ao
+tratamento do risco R08.
+
+**DA02** acrescenta latência ao fluxo de compra, já que a liberação do curso
+passa a depender de uma consulta a um serviço externo. O atraso é aceitável
+porque a confirmação de pagamento já não é instantânea na percepção do usuário,
+e porque a liberação indevida de conteúdo copiável não é integralmente
+reversível.
+
+**DA03** depende de fatores fora do controle da Nexora: a eficácia do DMARC
+está condicionada a servidores de destino que honrem a política publicada, e
+domínios visualmente semelhantes continuam disponíveis a atacantes. Por isso a
+decisão inclui a alteração no conteúdo das mensagens, que não depende da
+cooperação de terceiros.
+
+Nenhuma das decisões foi verificada empiricamente. A confirmação depende dos
+casos de teste da Etapa 4 e dos resultados da Etapa 5, e as decisões deverão ser
+revistas caso a arquitetura, os provedores contratados ou o registro de riscos
+sejam alterados.
