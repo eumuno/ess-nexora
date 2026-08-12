@@ -245,3 +245,63 @@ Instrutor não obtém sessão sem o segundo fator, independentemente da interfac
 utilizada. Tentativas automatizadas são interrompidas na borda antes de
 consumirem recursos de verificação, e cada tentativa e bloqueio fica registrado
 para a regra de detecção RD01 da Etapa 6.
+
+### DA03 — Segregação do domínio de envio e substituição de credenciais por links de uso único
+
+| Campo | Descrição |
+| :--- | :--- |
+| **Risco tratado** | R03 — Ataques de phishing com e-mails falsos (Alto, 9) |
+| **Requisito atendido** | RS02 |
+| **Ameaças de origem** | T03, T17 |
+
+**Problema tratado.** O phishing explora uma característica estrutural da
+comunicação por e-mail: sem autenticação na origem, o destinatário não tem como
+distinguir uma mensagem legítima da Nexora de uma imitação. O agravante é que a
+plataforma envia comunicações previsíveis — recuperação de conta, confirmação
+de compra, aviso de aula — que servem de modelo pronto para a mensagem falsa. O
+risco é classificado como Alto porque uma campanha atinge muitos usuários
+simultaneamente e serve de vetor de entrada para R01.
+
+**Decisão adotada.** A decisão combina três elementos. Primeiro, o envio
+transacional é segregado em um **subdomínio dedicado**, distinto do domínio
+usado para comunicação institucional e promocional, com SPF, DKIM e DMARC em
+política de rejeição publicados para cada um. Segundo, mensagens transacionais
+**nunca solicitam credenciais nem contêm formulário**: a recuperação de conta
+passa a ocorrer por **link assinado, de uso único e expiração curta**, validado
+pelo Serviço de Autenticação. Terceiro, o Serviço de Notificações é acionado
+exclusivamente pela API Gateway, com integração autenticada.
+
+**Motivo da escolha.** A autenticação de domínio isolada reduz a entrega de
+mensagens falsificadas, mas não protege quem recebe uma imitação vinda de um
+domínio parecido, sobre o qual a Nexora não tem controle. Por isso a decisão
+não se limita à camada de DNS: ao eliminar a solicitação de senha das
+mensagens legítimas, cria-se um sinal simples e verificável pelo usuário —
+**a Nexora nunca pede sua senha por e-mail** — que reduz o proveito da
+imitação. A segregação por subdomínio limita o dano reputacional: um incidente
+no envio promocional não compromete a entregabilidade das mensagens críticas de
+segurança. O link de uso único trata ainda T17, ao evitar que a mensagem de
+recuperação confirme a existência de um cadastro.
+
+**Alternativas descartadas.**
+
+- *Publicar DMARC em modo de monitoramento (`p=none`) permanentemente.*
+  Rejeitada como estado final: registra abusos, mas não instrui os servidores de
+  destino a rejeitar mensagens não autenticadas. Adotada apenas como fase
+  transitória de calibração antes da política de rejeição.
+- *Usar um único domínio para todos os envios.* Rejeitada porque volume
+  promocional e marcações de spam afetariam a reputação de envio das mensagens
+  transacionais, justamente as mais sensíveis ao tempo.
+- *Depender de treinamento e alerta aos usuários como controle principal.*
+  Rejeitada por transferir ao usuário final a responsabilidade por um controle
+  que a arquitetura pode exercer. Permanece como medida complementar.
+
+**Componentes afetados.** Serviço de Notificações externo, configuração de DNS
+do domínio institucional, API Gateway & Core (origem autenticada dos envios),
+Serviço de Autenticação (emissão e validação dos links de uso único) e
+Servidor de Logs & Auditoria (registro de emissão e consumo dos links).
+
+**Resultado esperado.** Mensagens que falsifiquem o domínio da Nexora tendem a
+ser rejeitadas pelos servidores de destino que honram DMARC. As mensagens
+legítimas deixam de conter o elemento que o phishing precisa imitar, e um link
+de recuperação interceptado perde validade após o primeiro uso ou o
+vencimento do prazo.
