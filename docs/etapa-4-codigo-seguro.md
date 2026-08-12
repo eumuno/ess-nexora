@@ -314,3 +314,26 @@ FUNCAO post_payments_callback(requisicao)
     RETORNAR STATUS_HTTP(200, "Pagamento processado com sucesso.")
 FIM_FUNCAO
 ```
+#### D. Resultado Seguro Esperado
+
+* **Rejeição de notificações forjadas (TS04):** um agente que descubra o
+  endereço do endpoint e envie uma notificação de aprovação não obtém efeito
+  algum. Sem a chave secreta compartilhada, a assinatura não pode ser
+  reproduzida, e a requisição é encerrada com `401` na Etapa 2, antes de
+  qualquer consulta ao banco ou liberação de conteúdo.
+* **Defesa em profundidade sobre a chave HMAC:** ainda que a chave secreta
+  vazasse, permitindo forjar uma assinatura válida, a Etapa 6 impediria a
+  liberação, pois a confirmação é obtida por canal iniciado pela própria
+  Nexora. Nenhuma garantia depende de um único segredo.
+* **Bloqueio da adulteração de valor (T06):** uma notificação assinada, porém
+  com valor inferior ao do pedido registrado, é recusada na Etapa 5. O preço
+  aceito é sempre o do servidor, nunca o informado na requisição.
+* **Reenvio legítimo tratado sem efeito colateral (TS03):** quando o gateway
+  reenvia um callback já processado, a Etapa 3 responde confirmando o estado
+  atual sem repetir a liberação nem gerar novo registro financeiro,
+  comprovando a transição única exigida pelos critérios de aprovação.
+* **Rastreabilidade sem exposição de dados sensíveis:** cada rejeição fica
+  registrada com pedido, origem, horário e motivo, permitindo auditoria e
+  alimentando a regra de detecção **RD02** da Etapa 6. A chave secreta, a
+  assinatura recebida e os dados financeiros completos permanecem fora dos
+  registros.
