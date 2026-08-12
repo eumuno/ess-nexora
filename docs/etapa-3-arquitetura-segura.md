@@ -181,6 +181,65 @@ Autenticação (MFA/JWT), Banco de Dados Relacional (segredo TOTP e hashes),
 Servidor de Logs & Auditoria (eventos de tentativa e bloqueio) e ambas as
 interfaces de usuário.
 
+### DA02 — Callback de pagamento tratado como entrada não confiável, com confirmação servidor a servidor e processamento idempotente
+
+| Campo | Descrição |
+| :--- | :--- |
+| **Risco tratado** | R04 — Forjamento de notificações de callback de pagamento (Médio, 6) |
+| **Requisito atendido** | RS03 |
+| **Ameaças de origem** | T04, T06 |
+
+**Problema tratado.** O endpoint de retorno do gateway é público por
+necessidade: precisa ser alcançável pelo provedor externo. Isso significa que
+qualquer agente na internet pode enviar uma requisição para ele. Se a API
+tratar essa notificação como fonte de verdade sobre o estado do pagamento, uma
+mensagem forjada é suficiente para liberar um curso sem receita
+correspondente. Há ainda o problema do reenvio: gateways legítimos reenviam
+callbacks quando não recebem confirmação, e um processamento não idempotente
+pode duplicar liberações ou registros financeiros.
+
+**Decisão adotada.** O callback passa a ser tratado como **notificação, não
+como autorização**. A API executa três verificações antes de alterar qualquer
+estado: valida a assinatura **HMAC-SHA256** com comparação em tempo constante;
+confirma o status da transação por **consulta reversa servidor a servidor** à
+API oficial do gateway; e verifica a correspondência entre pedido, valor,
+moeda e identificador de transação com os registros locais. O processamento é
+**idempotente por identificador de transação**: um callback já processado não
+produz nova liberação nem novo registro financeiro.
+
+**Motivo da escolha.** A assinatura HMAC prova a origem e a integridade da
+mensagem, mas depende da custódia correta de uma chave compartilhada. Se essa
+chave vazar, a assinatura sozinha deixa de ser prova. A consulta reversa cria
+uma segunda evidência, obtida por um canal iniciado pela própria Nexora, que
+não depende do que o remetente afirma. A verificação de valor e moeda também
+trata T06, em que o preço é adulterado no cliente antes do envio, e a
+idempotência impede que o reenvio legítimo do gateway produza efeito
+financeiro duplicado.
+
+**Alternativas descartadas.**
+
+- *Confiar apenas na assinatura HMAC.* Rejeitada por concentrar toda a garantia
+  em um único segredo compartilhado, sem qualquer verificação independente em
+  caso de comprometimento ou de erro na rotação de chaves.
+- *Restringir o endpoint por lista de endereços de origem.* Rejeitada como
+  controle principal: provedores em nuvem alteram suas faixas de endereço com
+  frequência e a medida não verifica a integridade do conteúdo da mensagem.
+  Permanece útil apenas como defesa complementar.
+- *Liberar o curso de imediato e reverter em caso de divergência.* Rejeitada
+  por inverter o ônus: o conteúdo educacional é copiável, e uma liberação
+  indevida não é integralmente reversível depois do download.
+
+**Componentes afetados.** API Gateway & Core (verificação e idempotência),
+Gateway de Pagamento externo (emissão da assinatura e consulta reversa), Banco
+de Dados Relacional (estado do pedido e identificadores já processados) e
+Servidor de Logs & Auditoria (registro sanitizado das rejeições).
+
+**Resultado esperado.** Nenhum curso é liberado sem confirmação obtida por
+canal iniciado pela Nexora. Callbacks sem assinatura, com assinatura inválida
+ou com divergência de valor são rejeitados antes de qualquer alteração de
+estado, conforme o caso de teste TS04 da Etapa 4, e cada rejeição alimenta a
+regra de detecção RD02 da Etapa 6.
+
 **Resultado esperado.** Um atacante de posse de credenciais válidas de um
 Instrutor não obtém sessão sem o segundo fator, independentemente da interface
 utilizada. Tentativas automatizadas são interrompidas na borda antes de
