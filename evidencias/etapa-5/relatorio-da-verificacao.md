@@ -198,6 +198,96 @@ risco já mapeado na Etapa 2:
 4. **Restringir o vazamento pelo cabeçalho `Referer`.** Aplicar a política
    `Referrer-Policy: strict-origin-when-cross-origin`, impedindo que o caminho
    completo da página de origem seja transmitido a terceiros.
+
+   ### 5.2.3 Análise Detalhada do Alerta 3 (A03)
+
+#### Descrição do Achado
+O OWASP ZAP registrou o alerta **Session ID in URL Rewrite**, de severidade
+**média** e classificado como *Systemic*, indicando que o identificador de
+sessão trafega na *query string* das requisições em vez de ser transportado
+exclusivamente por cookie.
+
+A classificação como sistêmica é relevante: o alerta não decorre de um endpoint
+isolado, mas de uma característica do mecanismo de gerenciamento de sessão da
+aplicação, afetando potencialmente todas as requisições autenticadas.
+
+#### Evidência Extraída
+* **Severidade:** Média (Medium) / Alerta laranja, marcado como *Systemic* no
+  painel do OWASP ZAP.
+* **Origem do achado:** Varredura sobre a instância local do OWASP Juice Shop em
+  `http://localhost:3000`, na sessão executada em 09 de agosto de 2026.
+* **Condição identificada:** presença de parâmetro de identificação de sessão na
+  URL das requisições registradas pela ferramenta. Por se tratar de achado
+  sistêmico, a condição não se restringe a um único endpoint, e sim ao
+  mecanismo de sessão adotado pela aplicação.
+* **Alertas correlatos na mesma sessão:** *Cookie No HttpOnly Flag* e
+  *Information Disclosure — Information in Browser sessionStorage*, ambos
+  relacionados à proteção inadequada de dados de sessão, o que reforça a
+  natureza sistêmica do problema.
+* **Registro visual:** painel consolidado de alertas em
+  `05-zap-alertas-gerados.png`.
+
+#### Impacto Real no Sistema Nexora
+O identificador de sessão equivale, em efeito prático, à credencial do usuário
+autenticado. Sua presença na URL o expõe em quatro locais fora do controle da
+aplicação:
+
+1. **Histórico e cache do navegador:** em computadores compartilhados —
+   laboratórios, bibliotecas e ambientes corporativos, comuns entre o público de
+   uma plataforma EAD — a sessão permanece recuperável após o uso.
+2. **Registros de servidores e intermediários:** URLs completas costumam ser
+   gravadas em logs de acesso, proxies e serviços de distribuição de conteúdo,
+   ampliando o alcance da exposição e agravando a ameaça T18 da Etapa 1.
+3. **Cabeçalho `Referer` enviado a terceiros:** ao carregar um recurso externo,
+   o navegador pode transmitir a URL de origem, entregando o identificador a um
+   domínio não relacionado. Combinado ao alerta A02, o vazamento deixa de
+   depender de um recurso externo qualquer e pode ser induzido pelo atacante.
+4. **Compartilhamento involuntário:** um aluno que copie o endereço de uma aula
+   para enviar a um colega transmite junto sua própria sessão.
+
+A consequência direta é o **sequestro de sessão sem conhecimento da senha**.
+Isso agrava o risco R01 por uma via que os controles do requisito RS01 não
+alcançam: a autenticação multifator protege o momento do login, mas não impede
+o reúso de uma sessão já estabelecida. Se a conta pertencer a um instrutor ou
+administrador, o atacante alcança as funções privilegiadas descritas nas
+ameaças T22 e T23.
+
+#### Relação CWE / OWASP
+* **CWE-598:** Uso do Método GET com Strings de Query Contendo Informação
+  Sensível.
+* **CWE-384:** Fixação de Sessão (*Session Fixation*), condição relacionada
+  quando o identificador pode ser imposto por parâmetro.
+* **OWASP Top 10:2021:** Categoria **A07:2021 — Identification and
+  Authentication Failures**.
+* **Referência complementar:** OWASP Session Management Cheat Sheet.
+
+#### Correção Técnica Proposta
+1. **Transportar a sessão exclusivamente por cookie, com atributos de
+   proteção.**
+
+```javascript
+   res.cookie('sessionId', tokenSessao, {
+     httpOnly: true,     // inacessível a JavaScript, reduz o impacto de XSS
+     secure:   true,     // transmitido apenas sobre HTTPS
+     sameSite: 'strict', // não enviado em requisições originadas por terceiros
+     maxAge:   1000 * 60 * 30
+   });
+```
+
+2. **Rejeitar sessões recebidas por parâmetro de URL.** A aplicação não deve
+   aceitar identificador de sessão fora do cookie, sob nenhuma condição de
+   compatibilidade. Aceitá-lo como alternativa preserva integralmente o vetor
+   de ataque.
+
+3. **Renovar o identificador na elevação de privilégio.** Emitir novo
+   identificador imediatamente após o login e após a validação do segundo fator,
+   invalidando o anterior. Essa medida trata a fixação de sessão e complementa
+   diretamente a decisão de arquitetura DA01.
+
+4. **Aplicar `Referrer-Policy` e limitar o tempo de vida da sessão.** Reduzir a
+   janela de reúso por meio de expiração por inatividade e encerramento
+   explícito no *logout*, com invalidação do lado do servidor e não apenas
+   remoção do cookie no cliente.
    
 ## 5.3 Possíveis falsos positivos e alertas descartados
 
