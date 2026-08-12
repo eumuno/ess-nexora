@@ -313,6 +313,19 @@ FUNCAO post_payments_callback(requisicao)
 
     RETORNAR STATUS_HTTP(200, "Pagamento processado com sucesso.")
 FIM_FUNCAO
+ // =============================================================================
+// PRÁTICA DE CÓDIGO SEGURO 2 — VALIDAÇÃO DE CALLBACK DE PAGAMENTO
+// Projeto Nexora — Engenharia de Software Seguro — Grupo 19
+// -----------------------------------------------------------------------------
+// Risco tratado ........: R04 — Forjamento de notificações de callback
+// Requisito atendido ...: RS03 — Verificação HMAC-SHA256 antes da liberação
+// Decisão de arquitetura: DA02 — Callback como notificação, não autorização
+// Ameaças de origem ....: T04, T06
+// Casos de teste .......: TS03 (válido) e TS04 (malicioso) — Seção 4.2.1
+// Referência OWASP .....: Third Party Payment Gateway Integration Cheat Sheet
+// Autor ................: Erik Bruckmann Soares
+// =============================================================================
+
 ```
 #### D. Resultado Seguro Esperado
 
@@ -338,15 +351,4 @@ FIM_FUNCAO
   assinatura recebida e os dados financeiros completos permanecem fora dos
   registros.
 
-  // =============================================================================
-// PRÁTICA DE CÓDIGO SEGURO 2 — VALIDAÇÃO DE CALLBACK DE PAGAMENTO
-// Projeto Nexora — Engenharia de Software Seguro — Grupo 19
-// -----------------------------------------------------------------------------
-// Risco tratado ........: R04 — Forjamento de notificações de callback
-// Requisito atendido ...: RS03 — Verificação HMAC-SHA256 antes da liberação
-// Decisão de arquitetura: DA02 — Callback como notificação, não autorização
-// Ameaças de origem ....: T04, T06
-// Casos de teste .......: TS03 (válido) e TS04 (malicioso) — Seção 4.2.1
-// Referência OWASP .....: Third Party Payment Gateway Integration Cheat Sheet
-// Autor ................: Erik Bruckmann Soares
-// =============================================================================
+ 
