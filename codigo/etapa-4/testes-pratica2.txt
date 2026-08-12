@@ -1,0 +1,77 @@
+TESTES DE SEGURANÇA — PRÁTICA 2: VALIDAÇÃO DE CALLBACK DE PAGAMENTO
+
+Objetivo
+Especificar, antes da implementação, testes para o endpoint
+POST /api/v1/payments/callback da Nexora. Os testes verificam que somente uma
+notificação autêntica, íntegra e confirmada pelo gateway pode alterar um pedido
+pendente para PAGO e liberar a matrícula do curso associado.
+
+Risco de origem: R04 — Forjamento de notificações de callback de pagamento.
+Requisito de segurança: RS03 — verificar a assinatura HMAC-SHA256 recebida
+antes de liberar qualquer curso e registrar tentativas inválidas sem expor
+segredos ou dados financeiros completos.
+
+Descrição da prática
+O callback é uma entrada externa. A API deve validar a presença da assinatura
+X-Gateway-Signature e do identificador de transação, recalcular o HMAC-SHA256
+sobre o corpo bruto e comparar em tempo constante. Em seguida, deve conferir
+id_pedido, valor e moeda contra o pedido local, impedir processamento duplicado
+por id_transacao e confirmar o estado APROVADO diretamente na API do gateway.
+
+TS03 — Callback válido e confirmado
+Pré-condições:
+- Existe um pedido PENDENTE para o aluno e curso de teste, com valor 99.90 e
+  moeda BRL.
+- A transação tx_1001 ainda não foi processada.
+- O ambiente de teste dispõe da chave HMAC do gateway e de uma resposta
+  servidor a servidor que informa tx_1001 como APROVADO.
+
+Entrada ou ação:
+Enviar uma única requisição POST /api/v1/payments/callback com corpo bruto
+contendo id_pedido do pedido pendente, id_transacao=tx_1001, valor=99.90 e
+moeda=BRL. O cabeçalho X-Gateway-Signature contém o HMAC-SHA256 válido desse
+mesmo corpo, calculado com a chave compartilhada.
+
+Resultado esperado:
+- A resposta é HTTP 200, sem retornar chave, assinatura, dados de cartão ou
+  detalhes internos da validação.
+- O pedido passa de PENDENTE para PAGO uma única vez.
+- A matrícula do aluno é liberada somente para o curso do pedido.
+- tx_1001 é marcada como processada; um reenvio idêntico recebe HTTP 200 sem
+  repetir a liberação ou gerar novo lançamento financeiro.
+
+Evidência ou comportamento seguro esperado:
+Registro de pagamento confirmado contendo horário, identificador do pedido e
+identificador da transação, com valores sensíveis mascarados ou omitidos. A
+evidência demonstra a comparação HMAC válida, a confirmação no gateway e a
+transição única de estado.
+
+TS04 — Callback forjado ou inconsistente
+Pré-condições:
+- Existe o mesmo pedido PENDENTE do TS03, sem curso liberado.
+- A transação tx_ataque não foi processada.
+
+Entrada ou ação:
+Enviar POST /api/v1/payments/callback para o pedido pendente com
+id_transacao=tx_ataque, valor=1.00, moeda=BRL e assinatura ausente ou HMAC
+inválido. Repetir o cenário com HMAC válido para o corpo, porém valor diferente
+do pedido, para confirmar a validação de consistência após a autenticação.
+
+Resultado esperado:
+- Assinatura ausente ou inválida: HTTP 401 Unauthorized; a API não consulta ou
+  altera o pedido e não libera matrícula.
+- Assinatura válida com valor ou moeda divergente: HTTP 409 Conflict; a API não
+  marca a transação como processada, não altera o pedido e não libera curso.
+- A resposta não informa qual parâmetro interno falhou além da mensagem segura
+  de requisição não autenticada ou divergência de pedido.
+
+Evidência ou comportamento seguro esperado:
+Para cada rejeição, registrar horário, origem, identificador do pedido quando
+disponível e motivo sanitizado (callback_sem_assinatura,
+callback_hmac_invalido ou callback_valor_divergente). Nunca registrar a chave
+HMAC, a assinatura integral recebida ou dados financeiros completos. A
+evidência deve mostrar que o pedido continua PENDENTE e sem matrícula liberada.
+
+Observação
+Estes testes foram especificados antes da implementação, conforme a Etapa 4.
+O pseudocódigo da Prática 2 não foi alterado por esta especificação.
