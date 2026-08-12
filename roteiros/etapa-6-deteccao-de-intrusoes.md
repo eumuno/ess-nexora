@@ -135,4 +135,42 @@ Este roteiro estabelece o plano conceitual de resposta a incidentes de seguranç
 
 ## 6.6 Setup e Estrutura do Roteiro
 
-*(PARTE DO ERIK; favor, apagar depois de preencher)*
+Esta seção consolida a organização do roteiro, registra a rastreabilidade entre
+as regras de detecção e as etapas anteriores e verifica a conformidade do
+documento com o entregável mínimo exigido.
+
+### 6.6.1 Estrutura do documento
+
+O roteiro está organizado em uma sequência que parte do conceito e chega à
+resposta operacional:
+
+| Seção | Conteúdo | Função no roteiro |
+| :---: | :--- | :--- |
+| **6.1** | Fundamentação de detecção de intrusões | Estabelece o conceito e a distinção entre prevenir e detectar |
+| **6.2** | Eventos de log necessários | Define a matéria-prima que alimenta as regras |
+| **6.3** | Regras de detecção RD01 e RD02 | Trata os riscos de autenticação e de pagamento |
+| **6.4** | Regra de detecção RD03 | Trata o risco de exposição de dados pessoais |
+| **6.5** | Roteiro de resposta pós-alerta | Define o que ocorre depois que uma regra dispara |
+| **6.6** | Setup e estrutura do roteiro | Consolida a rastreabilidade e verifica a conformidade |
+
+A ordem não é arbitrária. Cada seção fornece o insumo da seguinte: sem os
+eventos definidos na 6.2, as condições de alerta da 6.3 e da 6.4 não teriam
+fonte de dados; sem as regras, o roteiro de resposta da 6.5 não teria gatilho.
+
+### 6.6.2 Escopo e premissas adotadas
+
+O roteiro descreve **detecção no nível da aplicação**, e não no nível de rede.
+Essa escolha decorre da natureza das ameaças identificadas na Etapa 1: a maior
+parte dos abusos da Nexora ocorre por meio de requisições formalmente válidas,
+originadas de usuários autenticados, que um sistema de detecção baseado em
+assinaturas de tráfego não distinguiria do uso legítimo.
+
+Conforme o enunciado da etapa, **nenhum sistema de detecção foi instalado ou
+implementado**. As regras são especificações de projeto, e os limiares
+apresentados são valores iniciais que deverão ser calibrados com dados reais de
+operação antes de qualquer aplicação em produção.
+
+Os registros descritos na Seção 6.2 seguem o princípio da minimização: senhas,
+códigos de segundo fator, chaves HMAC, assinaturas completas e dados
+financeiros integrais **não são registrados em nenhuma hipótese**, conforme já
+estabelecido nas regras RD01 e RD02.
