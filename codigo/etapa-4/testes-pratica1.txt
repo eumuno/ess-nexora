@@ -41,7 +41,7 @@ Retorno Esperado:
 
 --------------------------------------------------------------------------------
 
-[TS03] Bloqueio por Força Bruta no Rate Limiting (RATE_LIMIT_BLOCKED)
+[TS05] Bloqueio por Força Bruta no Rate Limiting (RATE_LIMIT_BLOCKED)
 --------------------------------------------------------------------------------
 Descrição: Validar se o mecanismo de rate limit bloqueia requisições excessivas 
            de um mesmo IP após atingir o limite definido no pseudocódigo.

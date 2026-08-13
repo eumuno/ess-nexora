@@ -303,7 +303,7 @@ A tabela abaixo apresenta a classificação definitiva e a ordem de prioridade p
 | **23** | **R17** | Enumeração de e-mails ativos na autenticação | **4** | **Médio** | Serviço de Autenticação | Facilita a criação de listas de spam/phishing direcionadas, mas não expõe as senhas ou dados sensíveis dos perfis. |
 | **24** | **R11** | Manipulação de dados de gamificação e conquistas | **2** | **Baixo** | Gamificação e Rankings | Puramente cosmético. O comprometimento do ranking de engajamento não traz danos operacionais ou financeiros à Nexora. |
 
-### Justificativa da ordem provisória
+### Justificativa da ordem de priorização
 
 A priorização seguiu uma lógica rígida baseada no impacto real ao ecossistema da Nexora:
 1. **Riscos Críticos e Privilégios Gerais (Prioridade 1):** O risco **R23** lidera de forma absoluta por anular toda a estrutura de autorização da API com baixíssimo esforço técnico.

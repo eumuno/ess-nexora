@@ -1,0 +1,77 @@
+FUNCAO post_payments_callback(requisicao)
+
+    // O corpo bruto é necessário: reserializar o JSON alteraria o hash calculado
+    corpo_bruto        = requisicao.corpo_bruto
+    assinatura_recebida = requisicao.cabecalhos["X-Gateway-Signature"]
+    origem              = requisicao.ip
+
+    dados = interpretar_json(corpo_bruto)
+
+    // ETAPA 1: Presença dos elementos obrigatórios
+    SE assinatura_recebida VAZIA OU dados.id_transacao VAZIO ENTAO
+        registrar_evento_seguranca("callback_sem_assinatura", origem, dados.id_pedido)
+        RETORNAR STATUS_HTTP(401, "Requisição não autenticada.")
+    FIM_SE
+
+    // ETAPA 2: Verificação criptográfica da origem e da integridade
+    assinatura_calculada = hmac_sha256(corpo_bruto, obter_chave_secreta_gateway())
+
+    // Comparação em tempo constante: evita vazamento por análise de tempo de resposta
+    SE comparar_tempo_constante(assinatura_calculada, assinatura_recebida) == FALSO ENTAO
+        registrar_evento_seguranca("callback_hmac_invalido", origem, dados.id_pedido)
+        RETORNAR STATUS_HTTP(401, "Requisição não autenticada.")
+    FIM_SE
+
+    // ETAPA 3: Idempotência — reenvio legítimo não pode duplicar a liberação
+    SE transacao_ja_processada(dados.id_transacao) ENTAO
+        registrar_evento("callback_reenviado", dados.id_transacao)
+        RETORNAR STATUS_HTTP(200, "Notificação já processada anteriormente.")
+    FIM_SE
+
+    // ETAPA 4: Existência e estado do pedido
+    pedido = buscar_pedido_por_id(dados.id_pedido)
+
+    SE pedido == NULO OU pedido.status != "PENDENTE" ENTAO
+        registrar_evento_seguranca("callback_pedido_invalido", origem, dados.id_pedido)
+        RETORNAR STATUS_HTTP(409, "Pedido inexistente ou já finalizado.")
+    FIM_SE
+
+    // ETAPA 5: Correspondência de valor e moeda (trata também T06)
+    SE dados.valor != pedido.valor OU dados.moeda != pedido.moeda ENTAO
+        registrar_evento_seguranca("callback_valor_divergente", origem, pedido.id)
+        RETORNAR STATUS_HTTP(409, "Divergência entre a notificação e o pedido.")
+    FIM_SE
+
+    // ETAPA 6: Confirmação reversa servidor a servidor com o gateway oficial
+    status_real = consultar_transacao_no_gateway(dados.id_transacao)
+
+    SE status_real != "APROVADO" ENTAO
+        registrar_evento_seguranca("callback_nao_confirmado", origem, pedido.id)
+        RETORNAR STATUS_HTTP(409, "Pagamento não confirmado pelo provedor.")
+    FIM_SE
+
+    // Todas as verificações aprovadas: transição única e atômica de estado
+    INICIAR_TRANSACAO_BANCO
+        marcar_transacao_como_processada(dados.id_transacao)
+        pedido.status = "PAGO"
+        salvar_pedido(pedido)
+        liberar_matricula(pedido.id_aluno, pedido.id_curso)
+    CONFIRMAR_TRANSACAO_BANCO
+
+    // O log registra o desfecho, nunca a chave secreta nem a assinatura
+    registrar_evento("pagamento_confirmado", pedido.id, dados.id_transacao)
+
+    RETORNAR STATUS_HTTP(200, "Pagamento processado com sucesso.")
+FIM_FUNCAO
+ // =============================================================================
+// PRÁTICA DE CÓDIGO SEGURO 2 — VALIDAÇÃO DE CALLBACK DE PAGAMENTO
+// Projeto Nexora — Engenharia de Software Seguro — Grupo 19
+// -----------------------------------------------------------------------------
+// Risco tratado ........: R04 — Forjamento de notificações de callback
+// Requisito atendido ...: RS03 — Verificação HMAC-SHA256 antes da liberação
+// Decisão de arquitetura: DA02 — Callback como notificação, não autorização
+// Ameaças de origem ....: T04, T06
+// Casos de teste .......: TS03 (válido) e TS04 (malicioso) — Seção 4.2.1
+// Referência OWASP .....: Third Party Payment Gateway Integration Cheat Sheet
+// Autor ................: Erik Bruckmann Soares
+// =============================================================================
