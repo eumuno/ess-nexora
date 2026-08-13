@@ -326,9 +326,8 @@ Esta seção deverá registrar, para cada alerta questionado ou descartado:
   ser apresentados como resultados daquele ambiente, e não como falhas
   comprovadas da Nexora.
 
-## 5.5 Itens necessários para concluir o relatório
+## 5.5 Itens para concluir o relatório
 
-## 5.5 Pendências e limitações
 
 A verificação realizada nesta etapa foi executada exclusivamente sobre uma
 instância local do OWASP Juice Shop, utilizada como ambiente de laboratório
@@ -344,7 +343,6 @@ Além disso, nem todos os alertas identificados pelo OWASP ZAP foram submetidos
 à análise aprofundada. O relatório concentra-se nos três achados selecionados
 (A01, A02 e A03), considerados relevantes para os objetivos da etapa.
 
-## 5.6 Considerações finais
 
 ## 5.6 Considerações finais
 

@@ -148,7 +148,7 @@ FIM_FUNCAO
 **Risco relacionado:** R04 — Forjamento de notificações de callback de
 pagamento.
 
-**Requisito relacionado:** RS03 — Verificação da assinatura HMAC-SHA256 antes
+**Requisito relacionado:** RS05 — Verificação da assinatura HMAC-SHA256 antes
 da liberação de qualquer curso.
 
 **Justificativa:** callbacks são entradas externas e não podem ser considerados
@@ -157,11 +157,6 @@ autenticidade e a integridade da notificação, relacioná-la a um pedido existe
 e impedir processamento repetido antes de alterar o estado da compra ou liberar
 conteúdo. A prática é sustentada pela [OWASP Third Party Payment Gateway
 Integration Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Third_Party_Payment_Gateway_Integration_Cheat_Sheet.html).
-
----
-
-### 4.2.1 Casos de teste definidos antes da implementação
-
 
 ---
 
